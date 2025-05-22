@@ -3,7 +3,7 @@ services:
     extends:
       service: postgres
       file: compose.yaml
-    container_name: postgres-dev-container
+    container_name: postgres-test-container
     env_file:
       - .env
     environment:
@@ -11,9 +11,6 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '${DB_PORT}:5432'
-    volumes:
-      - postgres-dev-data:/var/lib/postgresql/data
+      - target: 5432
 
-volumes:
-  postgres-dev-data:
+
