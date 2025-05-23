@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,8 @@ public class Hotel {
     @ManyToOne
     @JoinColumn(name = "manager_id")
     private Manager manager;
+
+    @OneToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
 }
