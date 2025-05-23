@@ -1,0 +1,30 @@
+spring:
+  docker:
+    compose:
+      file: docker-compose-test.yaml
+      skip:
+        in-tests: false
+      stop:
+        command: down
+      start:
+        log-level: debug
+      readiness:
+        timeout: 5m
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    drop-first: true
+
+logging:
+  level:
+    org.springframework.test.web.reactive.server: TRACE
+    reactor.netty.http.client: DEBUG
+    org.springframework.web.reactive: DEBUG
