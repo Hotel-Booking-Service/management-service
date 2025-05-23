@@ -2,7 +2,7 @@ services:
   postgres:
     extends:
       service: postgres
-      file: compose.yaml
+      file: services.yaml
     container_name: postgres-test-container
     env_file:
       - .env
