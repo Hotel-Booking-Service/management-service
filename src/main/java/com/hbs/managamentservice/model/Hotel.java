@@ -1,10 +1,17 @@
 package com.hbs.managamentservice.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -12,7 +19,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -27,14 +37,48 @@ public class Hotel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "manager_id")
-    private Manager manager;
+    @Column(length = 150, nullable = false)
+    private String name;
+
+    @Lob
+    @Column(nullable = false)
+    private String description;
 
     @OneToOne
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @Column(nullable = false)
+    private int stars;
+
+    @Column
+    private boolean isActive = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private HotelStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private Manager manager;
+
     @OneToMany(mappedBy = "hotel", orphanRemoval = true)
     private Set<HotelRoom> rooms = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "hotel_amenities",
+            joinColumns = @JoinColumn(name = "hotel_id"),
+            inverseJoinColumns = @JoinColumn(name = "amenities_id"))
+    private Set<Amenity> amenities = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "hotel", orphanRemoval = true)
+    private Set<HotelPhoto> photos = new LinkedHashSet<>();
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }
