@@ -3,7 +3,7 @@ package com.hbs.managamentservice.integration.repository;
 import com.hbs.managamentservice.model.BedType;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelRoom;
-import com.hbs.managamentservice.model.HotelStatus;
+import com.hbs.managamentservice.model.HotelRoomStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.model.Manager;
 import com.hbs.managamentservice.model.Role;
@@ -55,7 +55,7 @@ class HotelRoomRepositoryTest {
         assertNotNull(saved.getId());
         assertEquals("101", saved.getNumber());
         assertEquals(3, saved.getFloor());
-        assertEquals(HotelStatus.FREE, saved.getStatus());
+        assertEquals(HotelRoomStatus.FREE, saved.getStatus());
         assertEquals(new BigDecimal("150.00"), saved.getPricePerNight());
     }
 
@@ -71,12 +71,12 @@ class HotelRoomRepositoryTest {
     @Test
     void whenUpdateHotelRoom_thenChangesPersisted() {
         HotelRoom hotelRoom = hotelRoomRepository.save(createHotelRoom());
-        hotelRoom.setStatus(HotelStatus.BUSY);
+        hotelRoom.setStatus(HotelRoomStatus.BUSY);
         hotelRoom.setPricePerNight(new BigDecimal("200.00"));
 
         HotelRoom updated = hotelRoomRepository.save(hotelRoom);
 
-        assertEquals(HotelStatus.BUSY, updated.getStatus());
+        assertEquals(HotelRoomStatus.BUSY, updated.getStatus());
         assertEquals(new BigDecimal("200.00"), updated.getPricePerNight());
     }
 
@@ -123,7 +123,7 @@ class HotelRoomRepositoryTest {
         hotelRoom.setHotel(hotel);
         hotelRoom.setNumber("101");
         hotelRoom.setFloor(3);
-        hotelRoom.setStatus(HotelStatus.FREE);
+        hotelRoom.setStatus(HotelRoomStatus.FREE);
         hotelRoom.setPricePerNight(new BigDecimal("150.00"));
 
         return hotelRoom;

@@ -49,7 +49,7 @@ public class HotelRoom {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private HotelStatus status;
+    private HotelRoomStatus status;
 
     @Column(nullable = false)
     private BigDecimal pricePerNight;
