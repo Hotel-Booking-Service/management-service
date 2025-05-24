@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,6 @@ public class Amenity {
     @Column(length = 50, nullable = false)
     private String name;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(length = 1024, nullable = false)
     private String icon;
 }
