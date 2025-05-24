@@ -6,11 +6,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,4 +34,7 @@ public class Hotel {
     @OneToOne
     @JoinColumn(name = "location_id")
     private Location location;
+
+    @OneToMany(mappedBy = "hotel", orphanRemoval = true)
+    private Set<HotelRoom> rooms = new LinkedHashSet<>();
 }
