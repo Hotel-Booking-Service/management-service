@@ -27,8 +27,8 @@ public class HotelPhoto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 1024, nullable = false, unique = true)
-    private String url;
+    @Column(nullable = false, unique = true)
+    private String s3Key;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
