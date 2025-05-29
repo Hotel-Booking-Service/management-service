@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.4.5"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -40,4 +41,33 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+    executionData.setFrom(
+        fileTree(layout.buildDirectory) {
+            include("jacoco/*.exec")
+        }
+    )
+}
+
+tasks.test {
+    description = "Runs unit tests only"
+    include("**/unit/**")
+    exclude("**/integration/**")
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+    include("**/integration/**")
+    shouldRunAfter("test")
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
 }
