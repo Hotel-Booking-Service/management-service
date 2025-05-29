@@ -164,6 +164,14 @@ jobs:
           name: build-final
           path: build/
 
+      - name: Download JaCoCo Report
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+          path: |
+            build/reports/jacoco/test/html/
+            build/reports/jacoco/test/jacocoTestReport.xml
+
       - name: SonarQube Scan
         uses: sonarsource/sonarcloud-github-action@master
         with:
