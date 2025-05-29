@@ -17,8 +17,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    outputs:
-      build_dir: ${{ steps.build.outputs.build_dir }}
 
     steps:
       - name: Checkout code
@@ -46,12 +44,12 @@ jobs:
       - name: Assemble project
         run: ./gradlew clean assemble --no-daemon --info
 
-      - name: Upload Build Artifact
+      - name: Upload build directory
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifact
-          path: build/libs/*.jar
-          retention-days: 7
+          name: build-dir
+          path: build/
+          retention-days: 1
 
   unit-tests:
     needs: build
@@ -65,6 +63,12 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Download build directory
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dir
+          path: build/
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -98,6 +102,12 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Download build directory
+        uses: actions/download-artifact@v4
+        with:
+          name: build-dir
+          path: build/
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
@@ -116,6 +126,9 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
       - name: SonarQube Scan
         uses: sonarSource/sonarcloud-github-action@master
