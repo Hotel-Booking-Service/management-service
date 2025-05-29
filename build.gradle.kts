@@ -56,3 +56,18 @@ tasks.jacocoTestReport {
         }
     )
 }
+
+tasks.test {
+    description = "Runs unit tests only"
+    include("**/unit/**")
+    exclude("**/integration/**")
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+    include("**/integration/**")
+    shouldRunAfter("test")
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+}

@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - master
-      - feature/*
   pull_request:
     branches:
       - master
@@ -71,7 +70,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run unit tests
-        run: ./gradlew test --tests "*unit.*" --no-daemon
+        run: ./gradlew test --no-daemon --info
 
       - name: Generate JaCoCo Report
         run: ./gradlew jacocoTestReport --no-daemon
@@ -103,7 +102,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run integration tests
-        run: ./gradlew test --tests "*integration.*" --no-daemon
+        run: ./gradlew integrationTest --no-daemon --info
 
   sonar:
     needs: [unit-tests, integration-tests]
