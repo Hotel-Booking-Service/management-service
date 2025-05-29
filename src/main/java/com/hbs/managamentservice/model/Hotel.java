@@ -1,5 +1,6 @@
 package com.hbs.managamentservice.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -44,19 +45,16 @@ public class Hotel {
     @Column(nullable = false)
     private String description;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "location_id")
     private Location location;
 
     @Column(nullable = false)
     private int stars;
 
-    @Column
-    private boolean isActive = false;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private HotelStatus status;
+    private HotelStatus status = HotelStatus.PLANNED;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")

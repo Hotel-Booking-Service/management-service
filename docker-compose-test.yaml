@@ -12,5 +12,3 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - target: 5432
-
-

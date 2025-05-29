@@ -45,11 +45,11 @@ class HotelPhotoRepositoryTest {
         Hotel hotel = hotelRepository.save(createHotel());
 
         HotelPhoto photo1 = new HotelPhoto();
-        photo1.setUrl("https://example.com/photo1.jpg");
+        photo1.setS3Key("photo1.jpg");
         photo1.setHotel(hotel);
 
         HotelPhoto photo2 = new HotelPhoto();
-        photo2.setUrl("https://example.com/photo2.jpg");
+        photo2.setS3Key("photo2.jpg");
         photo2.setHotel(hotel);
 
         hotelPhotoRepository.saveAll(List.of(photo1, photo2));
@@ -100,7 +100,6 @@ class HotelPhotoRepositoryTest {
         hotel.setDescription("A beautiful seaside hotel.");
         hotel.setStars(4);
         hotel.setStatus(HotelStatus.PLANNED);
-        hotel.setActive(true);
 
         Location location = new Location();
         location.setCountry("Country");
