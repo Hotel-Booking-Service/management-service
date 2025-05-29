@@ -42,7 +42,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Assemble project
-        run: ./gradlew clean assemble --no-daemon --info
+        run: ./gradlew clean assemble --no-daemon --info --build-cache
 
       - name: Upload build directory
         uses: actions/upload-artifact@v4
@@ -74,7 +74,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run unit tests
-        run: ./gradlew test --no-daemon --info
+        run: ./gradlew test --no-daemon --info --build-cache
 
       - name: Generate JaCoCo Report
         run: ./gradlew jacocoTestReport --no-daemon
