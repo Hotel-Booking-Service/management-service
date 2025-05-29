@@ -67,6 +67,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Run unit tests
         run: ./gradlew test --tests "*unit.*" --no-daemon
 
@@ -95,6 +98,9 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
       - name: Run integration tests
         run: ./gradlew test --tests "*integration.*" --no-daemon
