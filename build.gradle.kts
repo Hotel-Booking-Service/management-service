@@ -38,6 +38,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor:${property("mapstruct.version")}")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -45,8 +46,23 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.test {
+    description = "Runs unit tests only"
+    include("**/unit/**")
+    exclude("**/integration/**")
+}
+
+var integrationTest = tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests."
+    group = "verification"
+    include("**/integration/**")
+    shouldRunAfter("test")
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+}
+
 tasks.jacocoTestReport {
-    dependsOn(tasks.test)
+    dependsOn(tasks.test, integrationTest)
     reports {
         xml.required = true
         html.required = true
@@ -57,19 +73,4 @@ tasks.jacocoTestReport {
             include("jacoco/*.exec")
         }
     )
-}
-
-tasks.test {
-    description = "Runs unit tests only"
-    include("**/unit/**")
-    exclude("**/integration/**")
-}
-
-tasks.register<Test>("integrationTest") {
-    description = "Runs integration tests."
-    group = "verification"
-    include("**/integration/**")
-    shouldRunAfter("test")
-    testClassesDirs = sourceSets["test"].output.classesDirs
-    classpath = sourceSets["test"].runtimeClasspath
 }
