@@ -44,10 +44,10 @@ jobs:
       - name: Assemble project
         run: ./gradlew assemble --no-daemon --info --build-cache
 
-      - name: Upload build directory
+      - name: Upload initial build
         uses: actions/upload-artifact@v4
         with:
-          name: build-dir
+          name: build-initial
           path: build/
           retention-days: 1
 
@@ -75,10 +75,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Download build directory
+      - name: Download initial build
         uses: actions/download-artifact@v4
         with:
-          name: build-dir
+          name: build-initial
           path: build/
 
       - name: Make gradlew executable
@@ -87,10 +87,10 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test --no-daemon --info --build-cache
 
-      - name: Upload build directory
+      - name: Upload updated build
         uses: actions/upload-artifact@v4
         with:
-          name: build-dir
+          name: build-after-unit
           path: build/
           retention-days: 1
 
@@ -118,27 +118,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Download build directory
+      - name: Download build after unit tests
         uses: actions/download-artifact@v4
         with:
-          name: build-dir
+          name: build-after-unit
           path: build/
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
-
-      - name: Upload build directory
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-dir
-          path: build/
-          retention-days: 1
 
       - name: Run integration tests
         run: ./gradlew integrationTest --no-daemon --info --build-cache
 
       - name: Generate JaCoCo Report
         run: ./gradlew jacocoTestReport --no-daemon
+
+      - name: Upload final build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-final
+          path: build/
+          retention-days: 1
 
       - name: Upload JaCoCo Report
         if: always()
@@ -151,17 +151,17 @@ jobs:
           retention-days: 7
 
   sonar:
-    needs: [unit-tests, integration-tests]
+    needs: integration-tests
     runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download build directory
+      - name: Download final build
         uses: actions/download-artifact@v4
         with:
-          name: build-dir
+          name: build-final
           path: build/
 
       - name: SonarQube Scan
