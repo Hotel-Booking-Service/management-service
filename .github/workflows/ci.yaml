@@ -28,7 +28,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Cache Gradle dependencies
+      - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
@@ -42,7 +42,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Assemble project
-        run: ./gradlew clean assemble --no-daemon --info --build-cache
+        run: ./gradlew assemble --no-daemon --info --build-cache
 
       - name: Upload build directory
         uses: actions/upload-artifact@v4
@@ -56,13 +56,24 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Download build directory
         uses: actions/download-artifact@v4
@@ -94,13 +105,24 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Download build directory
         uses: actions/download-artifact@v4
@@ -112,14 +134,15 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run integration tests
-        run: ./gradlew integrationTest --no-daemon --info
+        run: ./gradlew integrationTest --no-daemon --info --build-cache
 
   sonar:
     needs: [unit-tests, integration-tests]
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -127,11 +150,21 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: SonarQube Scan
-        uses: sonarSource/sonarcloud-github-action@master
+        uses: sonarsource/sonarcloud-github-action@master
         with:
           args: -Dproject.settings=./sonar-project.properties
         env:
