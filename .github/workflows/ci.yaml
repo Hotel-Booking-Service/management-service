@@ -87,18 +87,12 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test --no-daemon --info --build-cache
 
-      - name: Generate JaCoCo Report
-        run: ./gradlew jacocoTestReport --no-daemon
-
-      - name: Upload JaCoCo Report
-        if: always()
+      - name: Upload build directory
         uses: actions/upload-artifact@v4
         with:
-          name: jacoco-report
-          path: |
-            build/reports/jacoco/test/html/
-            build/reports/jacoco/test/jacocoTestReport.xml
-          retention-days: 7
+          name: build-dir
+          path: build/
+          retention-days: 1
 
   integration-tests:
     needs: unit-tests
@@ -133,8 +127,28 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Upload build directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-dir
+          path: build/
+          retention-days: 1
+
       - name: Run integration tests
         run: ./gradlew integrationTest --no-daemon --info --build-cache
+
+      - name: Generate JaCoCo Report
+        run: ./gradlew jacocoTestReport --no-daemon
+
+      - name: Upload JaCoCo Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: |
+            build/reports/jacoco/test/html/
+            build/reports/jacoco/test/jacocoTestReport.xml
+          retention-days: 7
 
   sonar:
     needs: [unit-tests, integration-tests]
