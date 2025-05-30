@@ -28,4 +28,6 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
         return exceptionMapper.toErrorResponse(ex, request.getRequestURI());
     }
+
+
 }

@@ -4,6 +4,7 @@ import com.hbs.managamentservice.model.BedType;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelRoom;
 import com.hbs.managamentservice.model.HotelRoomStatus;
+import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.model.Manager;
 import com.hbs.managamentservice.model.Role;
@@ -114,8 +115,13 @@ class HotelRoomRepositoryTest {
         location = locationRepository.save(location);
 
         Hotel hotel = new Hotel();
+        hotel.setName("Hotel 1");
+        hotel.setDescription("Hotel Description");
         hotel.setManager(manager);
         hotel.setLocation(location);
+        hotel.setName("Hotel 1");
+        hotel.setDescription("Hotel 1 description");
+        hotel.setStatus(HotelStatus.PLANNED);
         hotel = hotelRepository.save(hotel);
 
         HotelRoom hotelRoom = new HotelRoom();

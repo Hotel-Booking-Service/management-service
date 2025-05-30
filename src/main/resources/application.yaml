@@ -1,9 +1,11 @@
 server:
-  port: ${SERVER_PORT}
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
     name: management-service
+  config:
+    import: optional:file:.env[.properties]
   docker:
     compose:
       file: docker-compose-dev.yaml

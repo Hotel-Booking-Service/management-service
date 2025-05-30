@@ -63,7 +63,6 @@ class HotelRepositoryTest {
         hotel.setDescription("A beautiful seaside hotel.");
         hotel.setStars(4);
         hotel.setStatus(HotelStatus.PLANNED);
-        hotel.setActive(true);
 
         Location location = new Location();
         location.setCountry("Country");
