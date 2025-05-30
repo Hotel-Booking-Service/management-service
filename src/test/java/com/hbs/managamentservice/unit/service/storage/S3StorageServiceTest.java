@@ -1,4 +1,4 @@
-package unit.storage;
+package com.hbs.managamentservice.unit.service.storage;
 
 import com.hbs.managamentservice.exception.domain.storage.EmptyFileException;
 import com.hbs.managamentservice.exception.domain.storage.StorageException;

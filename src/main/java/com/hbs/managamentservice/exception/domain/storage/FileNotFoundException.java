@@ -8,8 +8,4 @@ public class FileNotFoundException extends NotFoundException {
     public FileNotFoundException() {
         super(ERROR_MESSAGE);
     }
-
-    public FileNotFoundException(String s3Key) {
-        super(ERROR_MESSAGE + "s3Key: " + s3Key);
-    }
 }

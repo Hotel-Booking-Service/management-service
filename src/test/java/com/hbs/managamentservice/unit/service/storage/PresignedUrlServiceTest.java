@@ -1,4 +1,4 @@
-package unit.storage;
+package com.hbs.managamentservice.unit.service.storage;
 
 import com.hbs.managamentservice.service.storage.PresignedUrlService;
 import org.junit.jupiter.api.BeforeEach;
