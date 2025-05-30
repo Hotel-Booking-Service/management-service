@@ -115,6 +115,8 @@ class HotelRoomRepositoryTest {
         location = locationRepository.save(location);
 
         Hotel hotel = new Hotel();
+        hotel.setName("Hotel 1");
+        hotel.setDescription("Hotel Description");
         hotel.setManager(manager);
         hotel.setLocation(location);
         hotel.setName("Hotel 1");
