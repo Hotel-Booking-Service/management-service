@@ -23,6 +23,6 @@ storage:
     region: ru-central1
     access-key: ${S3_ACCESS_KEY}
     secret-key: ${S3_SECRET_KEY}
-    bucket: hbs-bucket
+    bucket: hbs-test-bucket
     path:
       delim: /
