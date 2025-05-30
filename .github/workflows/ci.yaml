@@ -126,6 +126,14 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Debug env var (length only)
+        run: |
+          echo "S3_ACCESS_KEY length: ${#S3_ACCESS_KEY}"
+          echo "S3_SECRET_KEY length: ${#S3_SECRET_KEY}"
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+
       - name: Run integration tests
         env:
           S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
