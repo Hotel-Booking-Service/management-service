@@ -96,6 +96,7 @@ jobs:
   integration-tests:
     needs: unit-tests
     runs-on: ubuntu-22.04
+    environment: dev
 
     steps:
       - name: Checkout code
