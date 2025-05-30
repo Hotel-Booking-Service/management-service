@@ -96,6 +96,8 @@ jobs:
   integration-tests:
     needs: unit-tests
     runs-on: ubuntu-22.04
+
+    environment: dev
     env:
       S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
       S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
