@@ -14,45 +14,23 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
-import java.net.URL;
-import java.time.Duration;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class S3StorageService implements StorageService, PresignedUrlProvider {
+public class S3StorageService implements StorageService {
 
     private final S3Client s3Client;
-    private final S3Presigner s3Presigner;
 
-    @Value("${spring.storage.s3.bucket}")
+    @Value("${storage.s3.bucket}")
     private String bucket;
 
-    @Value("${spring.storage.s3.path.delim}")
+    @Value("${storage.s3.path.delim}")
     private String s3PathDelim;
-
-    @Override
-    public URL generatePresignedUrlIfExists(String s3Key, Duration duration) {
-
-        this.validateObjectExists(s3Key);
-
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .getObjectRequest(b -> b.bucket(bucket).key(s3Key))
-                .signatureDuration(duration)
-                .build();
-
-        PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(presignRequest);
-
-        return presignedGetObjectRequest.url();
-    }
 
     @Override
     public String upload(MultipartFile file, String path) {
@@ -68,23 +46,25 @@ public class S3StorageService implements StorageService, PresignedUrlProvider {
                             .build(), RequestBody.fromBytes(file.getBytes())
             );
         } catch (IOException e) {
-            throw new StorageException("Не удалось выложить файл в S3: " + file.getOriginalFilename(), e);
+            throw new StorageException("Failed to lay out the file in S3:" + file.getOriginalFilename(), e);
         }
         return key;
     }
 
     @Override
     public byte[] download(String s3Key) {
-
-        this.validateObjectExists(s3Key);
-
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(s3Key)
-                .build();
-        ResponseBytes<GetObjectResponse> responseBytes =
-                s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes());
-        return responseBytes.asByteArray();
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(s3Key)
+                    .build();
+            ResponseBytes<GetObjectResponse> responseBytes =
+                    s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes());
+            return responseBytes.asByteArray();
+        } catch (S3Exception e) {
+            if (e.statusCode() == 404) throw new FileNotFoundException();
+            throw new StorageException("Error when downloading a file from S3: s3Key=" + s3Key, e);
+        }
     }
 
     @Override
@@ -96,12 +76,4 @@ public class S3StorageService implements StorageService, PresignedUrlProvider {
         s3Client.deleteObject(deleteObjectRequest);
     }
 
-    private void validateObjectExists(String s3Key) {
-        try {
-            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder().bucket(bucket).key(s3Key).build();
-            s3Client.headObject(headObjectRequest);
-        } catch (S3Exception e) {
-            throw new FileNotFoundException(s3Key);
-        }
-    }
 }

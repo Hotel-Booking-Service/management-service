@@ -17,16 +17,9 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
-import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
-import java.net.URL;
-import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,9 +36,6 @@ class S3StorageServiceTest {
 
     @Mock
     private S3Client s3Client;
-
-    @Mock
-    private S3Presigner s3Presigner;
 
     @InjectMocks
     private S3StorageService s3StorageService;
@@ -115,27 +105,6 @@ class S3StorageServiceTest {
 
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder().key(testS3Key).build();
         assertEquals(testS3Key, deleteObjectRequest.key());
-    }
-
-    @Test
-    void generatePresignedUrlIfExists_shouldReturnUrl_whenObjectExists() {
-        String s3Key = "some/key/file.txt";
-        URL expectedUrl = mock(URL.class);
-
-        when(s3Client.headObject(any(HeadObjectRequest.class)))
-                .thenReturn(HeadObjectResponse.builder().build());
-
-        PresignedGetObjectRequest presignedRequest = mock(PresignedGetObjectRequest.class);
-        when(presignedRequest.url()).thenReturn(expectedUrl);
-
-        when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class)))
-                .thenReturn(presignedRequest);
-
-        URL actualUrl = s3StorageService.generatePresignedUrlIfExists(s3Key, Duration.ofMinutes(15));
-
-        assertEquals(expectedUrl, actualUrl);
-
-        verify(s3Presigner).presignGetObject(any(GetObjectPresignRequest.class));
     }
 
 }

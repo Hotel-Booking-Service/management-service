@@ -15,16 +15,16 @@ import java.net.URI;
 @Configuration
 public class S3ClientConfig {
 
-    @Value("${spring.storage.s3.endpoint}")
+    @Value("${storage.s3.endpoint}")
     private String endpoint;
 
-    @Value("${spring.storage.s3.region}")
+    @Value("${storage.s3.region}")
     private String region;
 
-    @Value("${spring.storage.s3.access-key}")
+    @Value("${storage.s3.access-key}")
     private String accessKey;
 
-    @Value("${spring.storage.s3.secret-key}")
+    @Value("${storage.s3.secret-key}")
     private String secretKey;
 
     @Bean
