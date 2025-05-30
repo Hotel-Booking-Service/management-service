@@ -127,6 +127,9 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run integration tests
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
         run: ./gradlew integrationTest --no-daemon --info --build-cache
 
       - name: Generate JaCoCo Report
