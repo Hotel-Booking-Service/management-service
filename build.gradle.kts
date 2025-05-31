@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-docker-compose")
+    implementation("software.amazon.awssdk:s3:${property("aws-sdk-s3.version")}")
     implementation("org.mapstruct:mapstruct:${property("mapstruct.version")}")
     implementation("org.liquibase:liquibase-core")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdoc-openapi-webmvc-ui.version")}")

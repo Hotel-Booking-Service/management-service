@@ -16,3 +16,13 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+
+storage:
+  s3:
+    endpoint: https://storage.yandexcloud.net/
+    region: ru-central1
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    bucket: hbs-test-bucket
+    path:
+      delim: /
