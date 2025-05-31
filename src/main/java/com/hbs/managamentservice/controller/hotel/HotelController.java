@@ -55,6 +55,7 @@ public interface HotelController {
             )
     )
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     PagedResponse<HotelResponse> getAllHotels(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
             @Parameter(hidden = true) Pageable pageable);
@@ -72,6 +73,7 @@ public interface HotelController {
             )
     )
     @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     HotelResponse getHotelById(@Parameter(description = "Идентификатор отеля") @PathVariable Long id);
 
     @Operation(
