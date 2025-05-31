@@ -1,0 +1,10 @@
+hotel:
+  - id: 1
+    name: Hotel
+    description: Hotel description
+    location_id: 1
+    manager_id: null
+    status: ACTIVE
+    stars: 5
+    created_at: 2020-01-01 00:00:00
+    updated_at: 2020-01-01 00:00:00

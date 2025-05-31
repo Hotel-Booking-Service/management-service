@@ -4,6 +4,8 @@ import com.hbs.managamentservice.dto.request.CreateHotelRequest;
 import com.hbs.managamentservice.dto.request.LocationRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.LocationResponse;
+import com.hbs.managamentservice.dto.response.PagedResponse;
+import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.mapper.HotelMapper;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelStatus;
@@ -15,11 +17,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +43,54 @@ class HotelServiceTest {
 
     @InjectMocks
     private HotelServiceImpl hotelService;
+
+    @Test
+    void getAllHotels_shouldReturnHotelResponseList() {
+        Hotel hotel = getHotel();
+
+        LocationResponse locationResponse = new LocationResponse("Test Country", "Test City", "Test Street", "Test Building", "Test Zip Code");
+        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of());
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(hotelRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(hotel)));
+        when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
+
+        PagedResponse<HotelResponse> actual = hotelService.getAllHotels(pageable);
+
+        assertNotNull(actual);
+        assertEquals(1, actual.pageSize());
+        assertEquals(1, actual.totalElements());
+        assertEquals(1, actual.totalPages());
+        assertEquals(0, actual.pageNumber());
+        assertTrue(actual.last());
+        assertEquals(actual.content().getFirst(), hotelResponse);
+        verify(hotelRepository).findAll(pageable);
+    }
+
+    @Test
+    void getHotelById_shouldReturnHotelResponse() {
+        Hotel hotel = getHotel();
+
+        LocationResponse locationResponse = new LocationResponse("Test Country", "Test City", "Test Street", "Test Building", "Test Zip Code");
+        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of());
+
+        when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
+        when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.of(hotel));
+
+        HotelResponse actual = hotelService.getHotelById(1L);
+
+        assertNotNull(actual);
+        assertEquals(actual, hotelResponse);
+        verify(hotelRepository).findById(1L);
+    }
+
+    @Test
+    void getHotelById_shouldThrowException_whenHotelNotFound() {
+        when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        assertThrows(HotelNotFoundException.class, () -> hotelService.getHotelById(1L));
+    }
 
     @Test
     void createHotel_shouldReturnHotelResponse() {
