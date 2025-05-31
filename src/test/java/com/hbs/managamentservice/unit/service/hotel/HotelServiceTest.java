@@ -5,6 +5,7 @@ import com.hbs.managamentservice.dto.request.LocationRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.LocationResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
+import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.mapper.HotelMapper;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelStatus;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,6 +78,13 @@ class HotelServiceTest {
         assertNotNull(actual);
         assertEquals(actual, hotelResponse);
         verify(hotelRepository).findById(1L);
+    }
+
+    @Test
+    void getHotelById_shouldThrowException_whenHotelNotFound() {
+        when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        assertThrows(HotelNotFoundException.class, () -> hotelService.getHotelById(1L));
     }
 
     @Test
