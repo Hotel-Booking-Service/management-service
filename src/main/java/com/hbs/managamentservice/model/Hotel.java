@@ -69,7 +69,7 @@ public class Hotel {
     private Set<Amenity> amenities = new LinkedHashSet<>();
 
     @BatchSize(size = 10)
-    @OneToMany(mappedBy = "hotel", orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "hotel", orphanRemoval = true)
     private Set<HotelPhoto> photos = new LinkedHashSet<>();
 
     @CreationTimestamp
