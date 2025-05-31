@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -20,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -41,8 +41,7 @@ public class Hotel {
     @Column(length = 150, nullable = false)
     private String name;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2500)
     private String description;
 
     @OneToOne(cascade = CascadeType.PERSIST)
@@ -69,7 +68,8 @@ public class Hotel {
             inverseJoinColumns = @JoinColumn(name = "amenities_id"))
     private Set<Amenity> amenities = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "hotel", orphanRemoval = true)
+    @BatchSize(size = 10)
+    @OneToMany(mappedBy = "hotel", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<HotelPhoto> photos = new LinkedHashSet<>();
 
     @CreationTimestamp

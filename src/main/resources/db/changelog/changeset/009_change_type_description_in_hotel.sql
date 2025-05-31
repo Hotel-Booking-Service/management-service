@@ -1,0 +1,1 @@
+ALTER TABLE hotel ALTER COLUMN description TYPE VARCHAR(2500);

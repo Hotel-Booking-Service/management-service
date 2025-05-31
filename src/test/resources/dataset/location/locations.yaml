@@ -1,0 +1,7 @@
+location:
+  - id: 1
+    country: Estonia
+    city: Tallinn
+    street: Main street
+    building: 1
+    zip_code: 10111

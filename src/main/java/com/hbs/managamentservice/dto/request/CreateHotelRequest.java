@@ -31,10 +31,10 @@ public class CreateHotelRequest {
     @Schema(
             description = "Описание отеля",
             example = "Современный отель в центре города с высоким уровнем сервиса.",
-            minLength = 10, maxLength = 1500
+            minLength = 10, maxLength = 2500
     )
     @NotBlank(message = "Description is required")
-    @Size(min = 10, max = 1500)
+    @Size(min = 10, max = 2500)
     private String description;
 
     @Schema(
