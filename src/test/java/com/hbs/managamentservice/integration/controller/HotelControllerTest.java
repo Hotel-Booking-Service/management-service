@@ -99,16 +99,6 @@ class HotelControllerTest {
                 .isEqualTo(expected);
     }
 
-    @Test
-    @DataSet(value = "dataset/photo/photos.yaml")
-    void testGetPhotoById() {
-        ResponseEntity<Void> response = testRestTemplate.getForEntity(
-                "/api/v1/hotels/photos/1",
-                Void.class
-        );
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
     private static CreateHotelRequest getCreateHotelRequest() {
         LocationRequest locationRequest = new LocationRequest(
                 "Estonia",

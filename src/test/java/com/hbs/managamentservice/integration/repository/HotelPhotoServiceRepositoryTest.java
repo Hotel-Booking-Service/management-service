@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @ActiveProfiles("test")
-class HotelPhotoRepositoryTest {
+class HotelPhotoServiceRepositoryTest {
 
     @Autowired
     private HotelRepository hotelRepository;
