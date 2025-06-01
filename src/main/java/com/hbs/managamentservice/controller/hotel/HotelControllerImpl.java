@@ -54,7 +54,7 @@ public class HotelControllerImpl implements HotelController {
     @Override
     @GetMapping("/photos/{photoId}")
     public ResponseEntity<Void> getPhotoById(@PathVariable("photoId") Long photoId) {
-        URI presignedURI = hotelService.generatePresignedUrlForPhoto(photoId);
+        URI presignedURI = hotelService.generatePresignedURIForPhoto(photoId);
 
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(presignedURI).build();

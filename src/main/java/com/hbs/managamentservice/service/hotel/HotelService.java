@@ -15,5 +15,5 @@ public interface HotelService {
 
     HotelResponse createHotel(CreateHotelRequest hotel);
 
-    URI generatePresignedUrlForPhoto(Long photoId);
+    URI generatePresignedURIForPhoto(Long photoId);
 }

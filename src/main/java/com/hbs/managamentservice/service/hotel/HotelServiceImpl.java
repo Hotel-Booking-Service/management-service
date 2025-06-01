@@ -70,7 +70,8 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public URI generatePresignedUrlForPhoto(Long photoId) {
+    @Transactional(readOnly = true)
+    public URI generatePresignedURIForPhoto(Long photoId) {
         HotelPhoto photo = photoRepository.findById(photoId).orElseThrow(PhotoNotFoundException::new);
         return URI.create(presignedUrlProvider.generatePresignedUrl(photo.getS3Key(), Duration.ofSeconds(urlExpirationSeconds)).toString());
     }
