@@ -2,12 +2,17 @@ package com.hbs.managamentservice.controller.hotel;
 
 import com.hbs.managamentservice.dto.request.CreateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
+import com.hbs.managamentservice.dto.response.PagedResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +25,57 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Tag(name = "Hotels", description = "API для управления отелями")
 @RequestMapping("/api/v1/hotels")
 public interface HotelController {
+
+    @Operation(
+            summary = "Получить информацию о всех отелях",
+            description = "Возвращает информацию о всех отелях.",
+            parameters = {
+                    @Parameter(
+                            name = "page",
+                            description = "Номер страницы (начиная с 0)",
+                            example = "0"
+                    ),
+                    @Parameter(
+                            name = "size",
+                            description = "Количество элементов на странице",
+                            example = "10"
+                    ),
+                    @Parameter(
+                            name = "sort",
+                            description = "Сортировка: имя поля и направление (`asc` или `desc`)",
+                            example = "stars,desc"
+                    )
+            }
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Информация о всех отелях успешно получена",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = HotelResponse.class)
+            )
+    )
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    PagedResponse<HotelResponse> getAllHotels(
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
+            @Parameter(hidden = true) Pageable pageable);
+
+    @Operation(
+            summary = "Получить информацию о отеле по идентификатору",
+            description = "Возвращает информацию о отеле по переданному идентификатору."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Информация о отеле успешно получена",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = HotelResponse.class)
+            )
+    )
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    HotelResponse getHotelById(@Parameter(description = "Идентификатор отеля") @PathVariable Long id);
 
     @Operation(
             summary = "Создать новый отель",
