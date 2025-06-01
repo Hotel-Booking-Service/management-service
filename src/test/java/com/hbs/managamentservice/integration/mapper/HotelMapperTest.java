@@ -45,7 +45,7 @@ class HotelMapperTest {
             UriComponents mockUri = mock(UriComponents.class);
 
             builderMock.when(ServletUriComponentsBuilder::fromCurrentContextPath).thenReturn(mockBuilder);
-            when(mockBuilder.path("/api/v1/hotels/photos/{id}")).thenReturn(mockBuilder);
+            when(mockBuilder.path("/api/v1/hotels/photos.yaml/{id}")).thenReturn(mockBuilder);
             when(mockBuilder.buildAndExpand("photo.jpg")).thenReturn(mockUri);
             when(mockUri.toUri()).thenReturn(URI.create("http://localhost/api/v1/hotels/photos/photo.jpg"));
 

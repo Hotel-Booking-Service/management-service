@@ -20,7 +20,7 @@ public class PresignedUrlService implements PresignedUrlProvider {
     private String bucket;
 
     @Override
-    public URL generatePresignedUrlIfExists(String s3Key, Duration duration) {
+    public URL generatePresignedUrl(String s3Key, Duration duration) {
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
                 .getObjectRequest(b -> b.bucket(bucket).key(s3Key))
                 .signatureDuration(duration)

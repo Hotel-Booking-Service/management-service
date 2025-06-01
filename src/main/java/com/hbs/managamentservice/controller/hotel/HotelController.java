@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,4 +36,15 @@ public interface HotelController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     HotelResponse createHotel(@RequestBody @Valid CreateHotelRequest hotel);
+
+    @Operation(
+            summary = "Получить фото по id",
+            description = "Получает фото по id и перенаправляет по временному url."
+    )
+    @ApiResponse(
+            responseCode = "302",
+            description = "Успешное получение и перенаправление по ссылке"
+    )
+    @GetMapping("/photos/{photoId}")
+    ResponseEntity<Void> getPhotoById(@PathVariable("photoId") Long photoId);
 }
