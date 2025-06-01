@@ -30,3 +30,4 @@ storage:
     bucket: hbs-bucket
     path:
       delim: /
+    url-expiration-seconds: 900

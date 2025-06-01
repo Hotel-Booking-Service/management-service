@@ -12,4 +12,5 @@ public interface HotelService {
     HotelResponse getHotelById(Long id);
 
     HotelResponse createHotel(CreateHotelRequest hotel);
+
 }

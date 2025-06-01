@@ -50,7 +50,7 @@ class PresignedUrlServiceTest {
         when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class)))
                 .thenReturn(presignedRequest);
 
-        URL actualUrl = presignedUrlService.generatePresignedUrlIfExists(s3Key, Duration.ofMinutes(15));
+        URL actualUrl = presignedUrlService.generatePresignedUrl(s3Key, Duration.ofMinutes(15));
 
         assertEquals(expectedUrl, actualUrl);
         verify(s3Presigner).presignGetObject(any(GetObjectPresignRequest.class));

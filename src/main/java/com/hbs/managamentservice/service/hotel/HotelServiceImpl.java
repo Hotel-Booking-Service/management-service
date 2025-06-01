@@ -55,4 +55,5 @@ public class HotelServiceImpl implements HotelService {
         hotelEntity = hotelRepository.save(hotelEntity);
         return hotelMapper.toHotelResponse(hotelEntity);
     }
+
 }
