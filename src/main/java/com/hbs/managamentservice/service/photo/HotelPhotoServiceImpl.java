@@ -27,6 +27,8 @@ public class HotelPhotoServiceImpl implements HotelPhotoService{
     public URI generatePresignedURIForPhoto(Long photoId) {
         HotelPhoto photo = photoRepository.findById(photoId).orElseThrow(PhotoNotFoundException::new);
 
-        return URI.create(presignedUrlProvider.generatePresignedUrl(photo.getS3Key(), Duration.ofSeconds(urlExpirationSeconds)).toString());
+        return URI.create(presignedUrlProvider.generatePresignedUrl(
+                photo.getS3Key(),
+                Duration.ofSeconds(urlExpirationSeconds)).toString());
     }
 }
