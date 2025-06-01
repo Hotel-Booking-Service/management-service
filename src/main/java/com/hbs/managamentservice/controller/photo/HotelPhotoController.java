@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "Hotels", description = "API для управления отелями")
-@RequestMapping("/api/v1/hotels")
+@RequestMapping("/api/v1/hotels/photos")
 public interface HotelPhotoController {
 
     @Operation(
@@ -20,6 +20,6 @@ public interface HotelPhotoController {
             responseCode = "302",
             description = "Успешное получение и перенаправление по ссылке"
     )
-    @GetMapping("/photos/{photoId}")
+    @GetMapping("/{photoId}")
     ResponseEntity<Void> getPhotoById(@PathVariable Long photoId);
 }

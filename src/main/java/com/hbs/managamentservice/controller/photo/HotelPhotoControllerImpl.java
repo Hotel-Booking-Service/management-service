@@ -13,13 +13,13 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/hotels")
+@RequestMapping("/api/v1/hotels/photos")
 public class HotelPhotoControllerImpl implements HotelPhotoController {
 
     private final HotelPhotoService hotelPhotoService;
 
     @Override
-    @GetMapping("/photos/{photoId}")
+    @GetMapping("/{photoId}")
     public ResponseEntity<Void> getPhotoById(@PathVariable Long photoId) {
         URI presignedURI = hotelPhotoService.generatePresignedURIForPhoto(photoId);
 
