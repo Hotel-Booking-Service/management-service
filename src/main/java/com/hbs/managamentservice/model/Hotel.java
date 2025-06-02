@@ -72,6 +72,12 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", orphanRemoval = true)
     private Set<HotelPhoto> photos = new LinkedHashSet<>();
 
+    @Column
+    private boolean isDeleted = false;
+
+    @Column
+    private LocalDateTime deletedAt;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
