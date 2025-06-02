@@ -73,7 +73,7 @@ public class Hotel {
     private Set<HotelPhoto> photos = new LinkedHashSet<>();
 
     @Column
-    private boolean isDeleted = false;
+    private Boolean isDeleted = false;
 
     @Column
     private LocalDateTime deletedAt;
