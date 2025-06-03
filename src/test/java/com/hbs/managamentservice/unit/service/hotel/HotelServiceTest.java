@@ -12,6 +12,7 @@ import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.repository.HotelRepository;
 import com.hbs.managamentservice.service.hotel.HotelServiceImpl;
+import com.hbs.managamentservice.validation.HotelEntityFetcher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +41,9 @@ class HotelServiceTest {
 
     @Mock
     private HotelMapper hotelMapper;
+
+    @Mock
+    private HotelEntityFetcher hotelFetcher;
 
     @InjectMocks
     private HotelServiceImpl hotelService;

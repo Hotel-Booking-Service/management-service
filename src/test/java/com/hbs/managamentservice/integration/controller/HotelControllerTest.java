@@ -5,6 +5,7 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.spring.api.DBRider;
 import com.hbs.managamentservice.dto.request.CreateHotelRequest;
 import com.hbs.managamentservice.dto.request.LocationRequest;
+import com.hbs.managamentservice.dto.request.UpdateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.LocationResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
@@ -33,6 +34,24 @@ class HotelControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
+
+    @Test
+    @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml"}, cleanBefore = true, cleanAfter = true)
+    void testPatchHotel() {
+        UpdateHotelRequest updateHotelRequest = new UpdateHotelRequest();
+        updateHotelRequest.setName("Hotel Update");
+        HotelResponse response = testRestTemplate.patchForObject(
+                "/api/v1/hotels/1",
+                updateHotelRequest,
+                HotelResponse.class
+        );
+
+        assertNotNull(response);
+        assertEquals(response.name(), updateHotelRequest.getName());
+        assertEquals("Hotel description", response.description());
+        assertEquals(HotelStatus.ACTIVE, response.status());
+        assertEquals(5, response.stars());
+    }
 
     @Test
     @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml"}, cleanBefore = true)

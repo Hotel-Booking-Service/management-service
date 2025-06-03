@@ -1,6 +1,7 @@
 package com.hbs.managamentservice.controller.hotel;
 
 import com.hbs.managamentservice.dto.request.CreateHotelRequest;
+import com.hbs.managamentservice.dto.request.UpdateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import com.hbs.managamentservice.service.hotel.HotelService;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,4 +51,10 @@ public class HotelControllerImpl implements HotelController {
         return hotelService.createHotel(hotel);
     }
 
+    @Override
+    @PatchMapping("/{hotelId}")
+    @ResponseStatus(HttpStatus.OK)
+    public HotelResponse patchHotel(@PathVariable Long hotelId, @RequestBody UpdateHotelRequest request) {
+        return hotelService.patchHotel(hotelId, request);
+    }
 }
