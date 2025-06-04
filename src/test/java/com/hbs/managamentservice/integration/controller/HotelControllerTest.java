@@ -90,13 +90,28 @@ class HotelControllerTest {
                 5,
                 HotelStatus.ACTIVE,
                 new LocationResponse("Estonia", "Tallinn", "Pikk Street", "12A", "10123"),
-                List.of()
+                List.of(),
+                false,
+                null
         );
 
         assertThat(hotelResponse)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(expected);
+    }
+
+    @Test
+    @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml"}, cleanBefore = true)
+    void testDeleteHotel() {
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                "/api/v1/hotels/1",
+                HttpMethod.DELETE,
+                null,
+                Void.class
+        );
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     private static CreateHotelRequest getCreateHotelRequest() {
