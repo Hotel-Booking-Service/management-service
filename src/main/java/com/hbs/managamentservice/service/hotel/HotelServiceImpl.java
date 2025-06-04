@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -65,21 +66,18 @@ public class HotelServiceImpl implements HotelService {
 
         Hotel hotel = hotelFetcher.fetchHotel(id);
 
-        if (request.getLocationId() != null) {
-            hotel.setLocation(hotelFetcher.fetchLocation(request.getLocationId()));
-        }
+        Optional.ofNullable(request.getLocationId())
+                .ifPresent(locationId -> hotel.setLocation(hotelFetcher.fetchLocation(locationId)));
 
-        if(request.getManagerId() != null) {
-            hotel.setManager(hotelFetcher.fetchManager(request.getManagerId()));
-        }
+        Optional.ofNullable(request.getManagerId())
+                .ifPresent(managerId-> hotel.setManager(hotelFetcher.fetchManager(managerId)));
 
-        if(request.getAmenityIds() != null) {
-            hotel.setAmenities(hotelFetcher.fetchAmenities(request.getAmenityIds()));
-        }
+        Optional.ofNullable(request.getAmenityIds())
+                .ifPresent(amenityIds-> hotel.setAmenities(hotelFetcher.fetchAmenities(amenityIds)));
 
-        if(request.getAmenityIds() != null) {
-            hotel.setPhotos(hotelFetcher.fetchPhotos(request.getPhotoIds()));
-        }
+        Optional.ofNullable(request.getPhotoIds())
+                .ifPresent(photoIds -> hotel.setPhotos(hotelFetcher.fetchPhotos(photoIds)));
+
         hotelMapper.updateHotelFromPatchRequest(request, hotel);
 
         hotelRepository.save(hotel);

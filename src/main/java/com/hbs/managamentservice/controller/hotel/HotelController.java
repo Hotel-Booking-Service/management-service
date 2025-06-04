@@ -108,5 +108,5 @@ public interface HotelController {
     )
     @PatchMapping("/{hotelId}")
     @ResponseStatus(HttpStatus.OK)
-    HotelResponse patchHotel(@PathVariable Long hotelId, @RequestBody UpdateHotelRequest request);
+    HotelResponse patchHotel(@PathVariable Long hotelId, @Valid @RequestBody UpdateHotelRequest request);
 }

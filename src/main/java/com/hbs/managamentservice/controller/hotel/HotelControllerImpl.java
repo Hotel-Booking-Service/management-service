@@ -54,7 +54,7 @@ public class HotelControllerImpl implements HotelController {
     @Override
     @PatchMapping("/{hotelId}")
     @ResponseStatus(HttpStatus.OK)
-    public HotelResponse patchHotel(@PathVariable Long hotelId, @RequestBody UpdateHotelRequest request) {
+    public HotelResponse patchHotel(@PathVariable Long hotelId, @Valid @RequestBody UpdateHotelRequest request) {
         return hotelService.patchHotel(hotelId, request);
     }
 }

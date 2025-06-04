@@ -2,6 +2,8 @@ package com.hbs.managamentservice.dto.request;
 
 import com.hbs.managamentservice.model.HotelStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,7 +40,8 @@ public class UpdateHotelRequest {
             description = "Звездность отеля",
             example = "5"
     )
-    @Size(min = 1, max = 5)
+    @Min(1)
+    @Max(5)
     private Integer stars;
 
     @Schema(
