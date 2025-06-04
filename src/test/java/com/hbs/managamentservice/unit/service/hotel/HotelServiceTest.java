@@ -53,7 +53,7 @@ class HotelServiceTest {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(hotelRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(hotel)));
+        when(hotelRepository.findAllByDeletedFalse(pageable)).thenReturn(new PageImpl<>(List.of(hotel)));
         when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
 
         PagedResponse<HotelResponse> actual = hotelService.getAllHotels(pageable);
@@ -65,7 +65,7 @@ class HotelServiceTest {
         assertEquals(0, actual.pageNumber());
         assertTrue(actual.last());
         assertEquals(actual.content().getFirst(), hotelResponse);
-        verify(hotelRepository).findAll(pageable);
+        verify(hotelRepository).findAllByDeletedFalse(pageable);
     }
 
     @Test
