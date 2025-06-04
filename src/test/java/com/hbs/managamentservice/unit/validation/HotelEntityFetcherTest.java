@@ -120,18 +120,19 @@ class HotelEntityFetcherTest {
         Set<Long> amenityIds = new HashSet<>(List.of(1L));
         Amenity amenity = new Amenity();
         amenity.setId(1L);
+        List<Amenity> amenities = List.of(amenity);
 
-        when(amenityRepository.findById(1L)).thenReturn(Optional.of(amenity));
+        when(amenityRepository.findAllById(amenityIds)).thenReturn(amenities);
 
-        Set<Amenity> amenities = hotelEntityFetcher.fetchAmenities(amenityIds);
-        assertNotNull(amenities);
-        assertEquals(amenityIds.size(), amenities.size());
+        Set<Amenity> responseAmenities = hotelEntityFetcher.fetchAmenities(amenityIds);
+        assertNotNull(responseAmenities);
+        assertEquals(amenityIds.size(), responseAmenities.size());
     }
 
     @Test
     void testFetchHotelAmenities_shouldThrowExceptionAmenitiesNotFound() {
         Set<Long> amenityIds = new HashSet<>(List.of(1L));
-        when(amenityRepository.findById(1L)).thenReturn(Optional.empty());
+        when(amenityRepository.findAllById(amenityIds)).thenReturn(List.of());
         assertThrows(AmenityNotFoundException.class, () -> hotelEntityFetcher.fetchAmenities(amenityIds));
     }
 }
