@@ -68,6 +68,7 @@ class HotelControllerTest {
     }
 
     @Test
+    @DataSet(cleanBefore = true)
     void testCreateHotel() {
         CreateHotelRequest request = getCreateHotelRequest();
 
