@@ -132,7 +132,7 @@ class HotelControllerTest {
                 "Современный отель в центре города с высоким уровнем сервиса.",
                 5,
                 HotelStatus.ACTIVE,
-                locationRequest                                     // location
+                locationRequest
         );
     }
 }

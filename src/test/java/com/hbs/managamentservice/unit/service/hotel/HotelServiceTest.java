@@ -10,7 +10,6 @@ import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.mapper.HotelMapper;
 import com.hbs.managamentservice.model.Amenity;
 import com.hbs.managamentservice.model.Hotel;
-import com.hbs.managamentservice.model.HotelPhoto;
 import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.model.Manager;
@@ -65,13 +64,11 @@ class HotelServiceTest {
         request.setLocationId(10L);
         request.setManagerId(20L);
         request.setAmenityIds(Set.of(100L, 200L));
-        request.setPhotoIds(Set.of(300L, 400L));
 
         Hotel hotel = new Hotel();
         Location location = new Location();
         Manager manager = new Manager();
         Set<Amenity> amenities = Set.of(new Amenity(), new Amenity());
-        Set<HotelPhoto> photos = Set.of(new HotelPhoto(), new HotelPhoto());
 
         HotelResponse hotelResponse = HotelResponse.builder()
                 .id(hotelId)
@@ -83,7 +80,6 @@ class HotelServiceTest {
         when(hotelFetcher.fetchLocation(10L)).thenReturn(location);
         when(hotelFetcher.fetchManager(20L)).thenReturn(manager);
         when(hotelFetcher.fetchAmenities(Set.of(100L, 200L))).thenReturn(amenities);
-        when(hotelFetcher.fetchPhotos(Set.of(300L, 400L))).thenReturn(photos);
         when(hotelRepository.save(hotel)).thenReturn(hotel);
         when(hotelMapper.toHotelResponse(hotel)).thenReturn(hotelResponse);
 
@@ -96,7 +92,6 @@ class HotelServiceTest {
         verify(hotelFetcher).fetchLocation(10L);
         verify(hotelFetcher).fetchManager(20L);
         verify(hotelFetcher).fetchAmenities(Set.of(100L, 200L));
-        verify(hotelFetcher).fetchPhotos(Set.of(300L, 400L));
         verify(hotelMapper).updateHotelFromPatchRequest(request, hotel);
         verify(hotelRepository).save(hotel);
         verify(hotelMapper).toHotelResponse(hotel);

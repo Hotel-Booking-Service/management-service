@@ -4,15 +4,12 @@ import com.hbs.managamentservice.exception.domain.hotel.AmenityNotFoundException
 import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.exception.domain.hotel.LocationNotFoundException;
 import com.hbs.managamentservice.exception.domain.hotel.ManagerNotFoundException;
-import com.hbs.managamentservice.exception.domain.hotel.PhotoNotFoundException;
 import com.hbs.managamentservice.model.Amenity;
 import com.hbs.managamentservice.model.Hotel;
-import com.hbs.managamentservice.model.HotelPhoto;
 import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.model.Manager;
 import com.hbs.managamentservice.repository.AmenityRepository;
-import com.hbs.managamentservice.repository.HotelPhotoRepository;
 import com.hbs.managamentservice.repository.HotelRepository;
 import com.hbs.managamentservice.repository.LocationRepository;
 import com.hbs.managamentservice.repository.ManagerRepository;
@@ -46,9 +43,6 @@ class HotelEntityFetcherTest {
 
     @Mock
     private AmenityRepository amenityRepository;
-
-    @Mock
-    private HotelPhotoRepository hotelPhotoRepository;
 
     @Mock
     private ManagerRepository managerRepository;
@@ -139,25 +133,5 @@ class HotelEntityFetcherTest {
         Set<Long> amenityIds = new HashSet<>(List.of(1L));
         when(amenityRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(AmenityNotFoundException.class, () -> hotelEntityFetcher.fetchAmenities(amenityIds));
-    }
-
-    @Test
-    void testFetchHotelPhoto_shouldReturnHotelPhoto() {
-        Set<Long> photoIds = new HashSet<>(List.of(1L));
-
-        HotelPhoto hotelPhoto = new HotelPhoto();
-        hotelPhoto.setId(1L);
-
-        when(hotelPhotoRepository.findById(1L)).thenReturn(Optional.of(hotelPhoto));
-        Set<HotelPhoto> hotelPhotos = hotelEntityFetcher.fetchPhotos(photoIds);
-        assertNotNull(hotelPhotos);
-        assertEquals(photoIds.size(), hotelPhotos.size());
-    }
-
-    @Test
-    void testFetchHotelPhoto_shouldThrowExceptionPhotoNotFound() {
-        Set<Long> photoIds = new HashSet<>(List.of(1L));
-        when(hotelPhotoRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(PhotoNotFoundException.class, () -> hotelEntityFetcher.fetchPhotos(photoIds));
     }
 }

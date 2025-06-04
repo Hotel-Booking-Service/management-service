@@ -22,7 +22,7 @@ public class UpdateHotelRequest {
             example = "Grand Plaza",
             minLength = 3, maxLength = 100
     )
-    @Size(min = 3, max = 100)
+    @Size(min = 3, max = 100, message = "Min length = 3 ; Max length = 100")
     private String name;
 
     @Schema(
@@ -30,7 +30,7 @@ public class UpdateHotelRequest {
             example = "Современный отель в центре города с высоким уровнем сервиса.",
             minLength = 10, maxLength = 2500
     )
-    @Size(min = 10, max = 2500)
+    @Size(min = 10, max = 2500, message = "Min length = 10 ; Max length = 2500")
     private String description;
 
     @Schema(description = "Адрес отеля")
@@ -40,8 +40,8 @@ public class UpdateHotelRequest {
             description = "Звездность отеля",
             example = "5"
     )
-    @Min(1)
-    @Max(5)
+    @Min(value = 1, message = "Min stars is 1")
+    @Max(value = 5, message = "Min stars is 5")
     private Integer stars;
 
     @Schema(
@@ -56,9 +56,6 @@ public class UpdateHotelRequest {
 
     @Schema(description = "Удобства отеля")
     private Set<Long> amenityIds;
-
-    @Schema(description = "Фотки отеля")
-    private Set<Long> photoIds;
 
     @Schema(
             description = "Статус удаления",

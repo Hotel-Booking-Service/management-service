@@ -75,9 +75,6 @@ public class HotelServiceImpl implements HotelService {
         Optional.ofNullable(request.getAmenityIds())
                 .ifPresent(amenityIds-> hotel.setAmenities(hotelFetcher.fetchAmenities(amenityIds)));
 
-        Optional.ofNullable(request.getPhotoIds())
-                .ifPresent(photoIds -> hotel.setPhotos(hotelFetcher.fetchPhotos(photoIds)));
-
         hotelMapper.updateHotelFromPatchRequest(request, hotel);
 
         hotelRepository.save(hotel);
