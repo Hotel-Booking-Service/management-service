@@ -2,14 +2,18 @@ package com.hbs.managamentservice.unit.service.hotel;
 
 import com.hbs.managamentservice.dto.request.CreateHotelRequest;
 import com.hbs.managamentservice.dto.request.LocationRequest;
+import com.hbs.managamentservice.dto.request.UpdateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.LocationResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.mapper.HotelMapper;
+import com.hbs.managamentservice.model.Amenity;
 import com.hbs.managamentservice.model.Hotel;
+import com.hbs.managamentservice.model.HotelPhoto;
 import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
+import com.hbs.managamentservice.model.Manager;
 import com.hbs.managamentservice.repository.HotelRepository;
 import com.hbs.managamentservice.service.hotel.HotelServiceImpl;
 import com.hbs.managamentservice.validation.HotelEntityFetcher;
@@ -24,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -47,6 +52,55 @@ class HotelServiceTest {
 
     @InjectMocks
     private HotelServiceImpl hotelService;
+
+    @Test
+    void patchHotel_shouldUpdateAllFieldsSuccessfully() {
+        Long hotelId = 1L;
+
+        UpdateHotelRequest request = new UpdateHotelRequest();
+        request.setName("Updated Hotel");
+        request.setDescription("Updated Desc");
+        request.setStars(4);
+        request.setStatus(HotelStatus.ACTIVE);
+        request.setLocationId(10L);
+        request.setManagerId(20L);
+        request.setAmenityIds(Set.of(100L, 200L));
+        request.setPhotoIds(Set.of(300L, 400L));
+
+        Hotel hotel = new Hotel();
+        Location location = new Location();
+        Manager manager = new Manager();
+        Set<Amenity> amenities = Set.of(new Amenity(), new Amenity());
+        Set<HotelPhoto> photos = Set.of(new HotelPhoto(), new HotelPhoto());
+
+        HotelResponse hotelResponse = HotelResponse.builder()
+                .id(hotelId)
+                .name("Updated Hotel")
+                .description("Updated Desc")
+                .build();
+
+        when(hotelFetcher.fetchHotel(hotelId)).thenReturn(hotel);
+        when(hotelFetcher.fetchLocation(10L)).thenReturn(location);
+        when(hotelFetcher.fetchManager(20L)).thenReturn(manager);
+        when(hotelFetcher.fetchAmenities(Set.of(100L, 200L))).thenReturn(amenities);
+        when(hotelFetcher.fetchPhotos(Set.of(300L, 400L))).thenReturn(photos);
+        when(hotelRepository.save(hotel)).thenReturn(hotel);
+        when(hotelMapper.toHotelResponse(hotel)).thenReturn(hotelResponse);
+
+        HotelResponse actual = hotelService.patchHotel(hotelId, request);
+
+        assertNotNull(actual);
+        assertEquals(hotelResponse.name(), actual.name());
+
+        verify(hotelFetcher).fetchHotel(hotelId);
+        verify(hotelFetcher).fetchLocation(10L);
+        verify(hotelFetcher).fetchManager(20L);
+        verify(hotelFetcher).fetchAmenities(Set.of(100L, 200L));
+        verify(hotelFetcher).fetchPhotos(Set.of(300L, 400L));
+        verify(hotelMapper).updateHotelFromPatchRequest(request, hotel);
+        verify(hotelRepository).save(hotel);
+        verify(hotelMapper).toHotelResponse(hotel);
+    }
 
     @Test
     void getAllHotels_shouldReturnHotelResponseList() {
@@ -116,6 +170,7 @@ class HotelServiceTest {
         verify(hotelRepository).save(any(Hotel.class));
         verify(hotelMapper).toHotelResponse(hotel);
     }
+
 
     private static CreateHotelRequest getCreateHotelRequest() {
         LocationRequest locationRequest = new LocationRequest();
