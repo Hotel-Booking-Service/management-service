@@ -80,7 +80,6 @@ class HotelServiceTest {
         when(hotelFetcher.fetchLocation(10L)).thenReturn(location);
         when(hotelFetcher.fetchManager(20L)).thenReturn(manager);
         when(hotelFetcher.fetchAmenities(Set.of(100L, 200L))).thenReturn(amenities);
-        when(hotelRepository.save(hotel)).thenReturn(hotel);
         when(hotelMapper.toHotelResponse(hotel)).thenReturn(hotelResponse);
 
         HotelResponse actual = hotelService.patchHotel(hotelId, request);
@@ -93,7 +92,6 @@ class HotelServiceTest {
         verify(hotelFetcher).fetchManager(20L);
         verify(hotelFetcher).fetchAmenities(Set.of(100L, 200L));
         verify(hotelMapper).updateHotelFromPatchRequest(request, hotel);
-        verify(hotelRepository).save(hotel);
         verify(hotelMapper).toHotelResponse(hotel);
     }
 
