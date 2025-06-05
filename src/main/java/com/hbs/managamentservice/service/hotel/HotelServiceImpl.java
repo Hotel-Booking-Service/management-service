@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +24,7 @@ public class HotelServiceImpl implements HotelService {
     private final HotelMapper hotelMapper;
     private final HotelRepository hotelRepository;
     private final HotelEntityFetcher hotelFetcher;
+    private final HotelRelationResolver hotelRelationResolver;
 
     @Override
     @Transactional(readOnly = true)
@@ -66,14 +66,7 @@ public class HotelServiceImpl implements HotelService {
 
         Hotel hotel = hotelFetcher.fetchHotel(id);
 
-        Optional.ofNullable(request.getLocationId())
-                .ifPresent(locationId -> hotel.setLocation(hotelFetcher.fetchLocation(locationId)));
-
-        Optional.ofNullable(request.getManagerId())
-                .ifPresent(managerId-> hotel.setManager(hotelFetcher.fetchManager(managerId)));
-
-        Optional.ofNullable(request.getAmenityIds())
-                .ifPresent(amenityIds-> hotel.setAmenities(hotelFetcher.fetchAmenities(amenityIds)));
+        hotelRelationResolver.resolveRelations(hotel, request);
 
         hotelMapper.updateHotelFromPatchRequest(request, hotel);
 

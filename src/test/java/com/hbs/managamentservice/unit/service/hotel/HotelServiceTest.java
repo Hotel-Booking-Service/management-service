@@ -8,12 +8,11 @@ import com.hbs.managamentservice.dto.response.LocationResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.mapper.HotelMapper;
-import com.hbs.managamentservice.model.Amenity;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
-import com.hbs.managamentservice.model.Manager;
 import com.hbs.managamentservice.repository.HotelRepository;
+import com.hbs.managamentservice.service.hotel.HotelRelationResolver;
 import com.hbs.managamentservice.service.hotel.HotelServiceImpl;
 import com.hbs.managamentservice.validation.HotelEntityFetcher;
 import org.junit.jupiter.api.Test;
@@ -34,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +48,9 @@ class HotelServiceTest {
 
     @Mock
     private HotelEntityFetcher hotelFetcher;
+
+    @Mock
+    private HotelRelationResolver hotelRelationResolver;
 
     @InjectMocks
     private HotelServiceImpl hotelService;
@@ -66,9 +69,6 @@ class HotelServiceTest {
         request.setAmenityIds(Set.of(100L, 200L));
 
         Hotel hotel = new Hotel();
-        Location location = new Location();
-        Manager manager = new Manager();
-        Set<Amenity> amenities = Set.of(new Amenity(), new Amenity());
 
         HotelResponse hotelResponse = HotelResponse.builder()
                 .id(hotelId)
@@ -77,9 +77,7 @@ class HotelServiceTest {
                 .build();
 
         when(hotelFetcher.fetchHotel(hotelId)).thenReturn(hotel);
-        when(hotelFetcher.fetchLocation(10L)).thenReturn(location);
-        when(hotelFetcher.fetchManager(20L)).thenReturn(manager);
-        when(hotelFetcher.fetchAmenities(Set.of(100L, 200L))).thenReturn(amenities);
+        doNothing().when(hotelRelationResolver).resolveRelations(hotel, request);
         when(hotelMapper.toHotelResponse(hotel)).thenReturn(hotelResponse);
 
         HotelResponse actual = hotelService.patchHotel(hotelId, request);
@@ -88,9 +86,6 @@ class HotelServiceTest {
         assertEquals(hotelResponse.name(), actual.name());
 
         verify(hotelFetcher).fetchHotel(hotelId);
-        verify(hotelFetcher).fetchLocation(10L);
-        verify(hotelFetcher).fetchManager(20L);
-        verify(hotelFetcher).fetchAmenities(Set.of(100L, 200L));
         verify(hotelMapper).updateHotelFromPatchRequest(request, hotel);
         verify(hotelMapper).toHotelResponse(hotel);
     }
