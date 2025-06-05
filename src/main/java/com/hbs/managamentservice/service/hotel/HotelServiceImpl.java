@@ -77,8 +77,6 @@ public class HotelServiceImpl implements HotelService {
 
         hotelMapper.updateHotelFromPatchRequest(request, hotel);
 
-        hotelRepository.save(hotel);
-
         return hotelMapper.toHotelResponse(hotel);
     }
 
