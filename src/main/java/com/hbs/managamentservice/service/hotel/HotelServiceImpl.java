@@ -13,8 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
@@ -26,18 +24,8 @@ public class HotelServiceImpl implements HotelService {
     @Transactional(readOnly = true)
     public PagedResponse<HotelResponse> getAllHotels(Pageable pageable) {
         Page<Hotel> hotelsPage = hotelRepository.findAll(pageable);
-        List<HotelResponse> content = hotelsPage.stream()
-                .map(hotelMapper::toHotelResponse)
-                .toList();
 
-        return new PagedResponse<>(
-                content,
-                hotelsPage.getNumber(),
-                hotelsPage.getSize(),
-                hotelsPage.getTotalElements(),
-                hotelsPage.getTotalPages(),
-                hotelsPage.isLast()
-        );
+        return PagedResponse.from(hotelsPage, hotelMapper::toHotelResponse);
     }
 
     @Override

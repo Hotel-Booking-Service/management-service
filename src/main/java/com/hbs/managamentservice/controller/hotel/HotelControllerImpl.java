@@ -48,5 +48,4 @@ public class HotelControllerImpl implements HotelController {
     public HotelResponse createHotel(@RequestBody @Valid CreateHotelRequest hotel) {
         return hotelService.createHotel(hotel);
     }
-
 }
