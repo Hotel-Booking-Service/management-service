@@ -10,6 +10,10 @@ import org.springframework.lang.NonNull;
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
 
     @NonNull
+    @EntityGraph(attributePaths = {"location"})
+    Page<Hotel> findAllByDeletedFalse(@NonNull Pageable pageable);
+
+    @NonNull
     @Override
     @EntityGraph(attributePaths = {"location"})
     Page<Hotel> findAll(@NonNull Pageable pageable);
