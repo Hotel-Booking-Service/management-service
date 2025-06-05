@@ -2,6 +2,7 @@ package com.hbs.managamentservice.unit.service.hotel;
 
 import com.hbs.managamentservice.dto.request.CreateHotelRequest;
 import com.hbs.managamentservice.dto.request.LocationRequest;
+import com.hbs.managamentservice.dto.request.UpdateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.LocationResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
@@ -11,7 +12,9 @@ import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.repository.HotelRepository;
+import com.hbs.managamentservice.service.hotel.HotelRelationResolver;
 import com.hbs.managamentservice.service.hotel.HotelServiceImpl;
+import com.hbs.managamentservice.validation.HotelEntityFetcher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,12 +26,14 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,8 +46,49 @@ class HotelServiceTest {
     @Mock
     private HotelMapper hotelMapper;
 
+    @Mock
+    private HotelEntityFetcher hotelFetcher;
+
+    @Mock
+    private HotelRelationResolver hotelRelationResolver;
+
     @InjectMocks
     private HotelServiceImpl hotelService;
+
+    @Test
+    void patchHotel_shouldUpdateAllFieldsSuccessfully() {
+        Long hotelId = 1L;
+
+        UpdateHotelRequest request = new UpdateHotelRequest();
+        request.setName("Updated Hotel");
+        request.setDescription("Updated Desc");
+        request.setStars(4);
+        request.setStatus(HotelStatus.ACTIVE);
+        request.setLocationId(10L);
+        request.setManagerId(20L);
+        request.setAmenityIds(Set.of(100L, 200L));
+
+        Hotel hotel = new Hotel();
+
+        HotelResponse hotelResponse = HotelResponse.builder()
+                .id(hotelId)
+                .name("Updated Hotel")
+                .description("Updated Desc")
+                .build();
+
+        when(hotelFetcher.fetchHotel(hotelId)).thenReturn(hotel);
+        doNothing().when(hotelRelationResolver).resolveRelations(hotel, request);
+        when(hotelMapper.toHotelResponse(hotel)).thenReturn(hotelResponse);
+
+        HotelResponse actual = hotelService.patchHotel(hotelId, request);
+
+        assertNotNull(actual);
+        assertEquals(hotelResponse.name(), actual.name());
+
+        verify(hotelFetcher).fetchHotel(hotelId);
+        verify(hotelMapper).updateHotelFromPatchRequest(request, hotel);
+        verify(hotelMapper).toHotelResponse(hotel);
+    }
 
     @Test
     void getAllHotels_shouldReturnHotelResponseList() {
@@ -112,6 +158,7 @@ class HotelServiceTest {
         verify(hotelRepository).save(any(Hotel.class));
         verify(hotelMapper).toHotelResponse(hotel);
     }
+
 
     private static CreateHotelRequest getCreateHotelRequest() {
         LocationRequest locationRequest = new LocationRequest();
