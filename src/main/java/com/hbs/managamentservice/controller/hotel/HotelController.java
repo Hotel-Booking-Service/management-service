@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -91,4 +92,16 @@ public interface HotelController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     HotelResponse createHotel(@RequestBody @Valid CreateHotelRequest hotel);
+
+    @Operation(
+            summary = "Удалить отель",
+            description = "Удаляет отель по переданному идентификатору."
+    )
+    @ApiResponse(
+            responseCode = "204",
+            description = "Отель успешно удалeн"
+    )
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteHotel(@Parameter(description = "Идентификатор отеля") @PathVariable Long id);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,5 +48,12 @@ public class HotelControllerImpl implements HotelController {
     @ResponseStatus(HttpStatus.CREATED)
     public HotelResponse createHotel(@RequestBody @Valid CreateHotelRequest hotel) {
         return hotelService.createHotel(hotel);
+    }
+
+    @Override
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteHotel(@PathVariable Long id) {
+        hotelService.deleteHotel(id);
     }
 }
