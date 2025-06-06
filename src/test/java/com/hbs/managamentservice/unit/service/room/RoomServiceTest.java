@@ -1,5 +1,6 @@
 package com.hbs.managamentservice.unit.service.room;
 
+import com.hbs.managamentservice.dto.request.CreateRoomRequest;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import com.hbs.managamentservice.dto.response.RoomResponse;
 import com.hbs.managamentservice.exception.domain.room.RoomNotFoundException;
@@ -14,8 +15,8 @@ import com.hbs.managamentservice.model.RoomCategory;
 import com.hbs.managamentservice.model.RoomType;
 import com.hbs.managamentservice.repository.HotelRepository;
 import com.hbs.managamentservice.repository.HotelRoomRepository;
+import com.hbs.managamentservice.repository.RoomTypeRepository;
 import com.hbs.managamentservice.service.room.RoomServiceImpl;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,6 +40,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RoomServiceTest {
+
+    @Mock
+    private RoomTypeRepository roomTypeRepository;
 
     @Mock
     private HotelRepository hotelRepository;
@@ -103,6 +107,34 @@ class RoomServiceTest {
         assertThrows(RoomNotFoundException.class, () -> roomService.getRoomById(1L));
     }
 
+    @Test
+    void createHotelRoom_shouldReturnRoomResponse() {
+        HotelRoom hotelRoom = getHotelRoom();
+
+        RoomResponse roomResponse = new RoomResponse(1L, 1L, 1L, "Test Room Number", 5, HotelRoomStatus.FREE, BigDecimal.valueOf(150));
+
+        when(hotelRepository.findById(1L)).thenReturn(Optional.of(hotelRoom.getHotel()));
+        when(roomTypeRepository.findById(1L)).thenReturn(Optional.of(hotelRoom.getRoomType()));
+        when(hotelRoomMapper.toHotelRoom(any(CreateRoomRequest.class), any(Hotel.class), any(RoomType.class))).thenReturn(hotelRoom);
+        when(hotelRoomMapper.toRoomResponse(any(HotelRoom.class))).thenReturn(roomResponse);
+        when(hotelRoomRepository.save(any(HotelRoom.class))).thenReturn(hotelRoom);
+
+        CreateRoomRequest roomRequest = new CreateRoomRequest();
+        roomRequest.setHotelId(1L);
+        roomRequest.setRoomTypeId(1L);
+        roomRequest.setFloor(5);
+        roomRequest.setPricePerNight(BigDecimal.valueOf(150));
+        roomRequest.setNumber("Test Room Number");
+        roomRequest.setStatus(HotelRoomStatus.FREE);
+
+        RoomResponse actual = roomService.createRoom(roomRequest);
+
+        assertNotNull(actual);
+        assertEquals(actual, roomResponse);
+        verify(hotelRoomRepository).save(any(HotelRoom.class));
+        verify(hotelRoomMapper).toRoomResponse(any(HotelRoom.class));
+    }
+
     private static HotelRoom getHotelRoom() {
         Hotel hotel = getHotel();
 
@@ -126,7 +158,6 @@ class RoomServiceTest {
         return hotelRoom;
     }
 
-    @NotNull
     private static Hotel getHotel() {
         Location location = new Location();
         location.setCountry("Test Country");
