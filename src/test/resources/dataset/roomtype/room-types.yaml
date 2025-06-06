@@ -1,0 +1,7 @@
+room_type:
+  - id: 1
+    name: STANDARD
+    description: Single room
+    area: 10
+    bed_type: SINGLE
+    max_guests: 5

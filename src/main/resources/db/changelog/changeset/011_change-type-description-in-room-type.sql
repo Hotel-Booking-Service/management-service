@@ -1,0 +1,1 @@
+ALTER TABLE room_type ALTER COLUMN description TYPE VARCHAR(1500);
