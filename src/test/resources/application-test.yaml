@@ -1,27 +1,29 @@
 spring:
   docker:
     compose:
-      file: docker-compose-test.yaml
-      skip:
-        in-tests: false
-      stop:
-        command: down
-      start:
-        log-level: debug
-      readiness:
-        timeout: 5m
+      enabled: false
+
+  config:
+    import: optional:file:.env[.properties]
 
   datasource:
+    url: jdbc:postgresql://${DB_HOST_TEST}:${DB_PORT_TEST}/${DB_NAME_TEST}
+    username: ${DB_USER_TEST}
+    password: ${DB_PASSWORD_TEST}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
     show-sql: true
 
   liquibase:
     enabled: true
     drop-first: true
+
+  test:
+    database:
+      replace: none
 
 storage:
   s3:

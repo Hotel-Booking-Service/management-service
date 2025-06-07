@@ -22,8 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("test-no-docker")
 @SpringBootTest
+@ActiveProfiles("test")
 class HotelMapperTest {
 
     @Autowired

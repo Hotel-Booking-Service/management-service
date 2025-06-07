@@ -42,7 +42,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.github.database-rider:rider-spring:${property("database-rider.version")}")
-    testRuntimeOnly("com.h2database:h2")
+    testImplementation("org.postgresql:postgresql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
