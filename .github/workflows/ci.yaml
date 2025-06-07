@@ -123,6 +123,17 @@ jobs:
           name: build-after-unit
           path: build/
 
+      - name: Load secrets from Vault via REST API
+        env:
+          VAULT_ADDR: https://vault.java-mp.space
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+        run: |
+          RESPONSE=$(curl -sSL \
+            --header "X-Vault-Token: $VAULT_TOKEN" \
+            "$VAULT_ADDR/v1/secret/data/ci/your-app")
+          
+          echo "$RESPONSE" | jq -r '.data.data | to_entries[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
