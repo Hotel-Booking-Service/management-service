@@ -130,7 +130,7 @@ jobs:
         run: |
           RESPONSE=$(curl -sSL \
             --header "X-Vault-Token: $VAULT_TOKEN" \
-            "$VAULT_ADDR/v1/secret/data/ci/your-app")
+            "$VAULT_ADDR/v1/secret/data/ci/management-service")
           
           echo "$RESPONSE" | jq -r '.data.data | to_entries[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
