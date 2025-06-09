@@ -1,17 +1,18 @@
 package com.hbs.managamentservice.service.room;
 
 import com.hbs.managamentservice.dto.request.CreateRoomRequest;
+import com.hbs.managamentservice.dto.request.UpdateRoomRequest;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import com.hbs.managamentservice.dto.response.RoomResponse;
-import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
-import com.hbs.managamentservice.exception.domain.room.RoomNotFoundException;
 import com.hbs.managamentservice.mapper.HotelRoomMapper;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelRoom;
 import com.hbs.managamentservice.model.RoomType;
-import com.hbs.managamentservice.repository.HotelRepository;
 import com.hbs.managamentservice.repository.HotelRoomRepository;
-import com.hbs.managamentservice.repository.RoomTypeRepository;
+import com.hbs.managamentservice.resolver.HotelResolver;
+import com.hbs.managamentservice.resolver.HotelRoomResolver;
+import com.hbs.managamentservice.resolver.RoomTypeResolver;
+import com.hbs.managamentservice.resolver.RoomTypeUpdateResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,24 +23,25 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
 
-    private final HotelRepository hotelRepository;
-    private final RoomTypeRepository roomTypeRepository;
     private final HotelRoomMapper hotelRoomMapper;
     private final HotelRoomRepository hotelRoomRepository;
+    private final HotelRoomResolver hotelRoomResolver;
+    private final RoomTypeResolver roomTypeResolver;
+    private final HotelResolver hotelResolver;
+    private final RoomTypeUpdateResolver roomTypeUpdateResolver;
 
     @Override
     @Transactional(readOnly = true)
     public RoomResponse getRoomById(Long id) {
-        HotelRoom room = hotelRoomRepository.findById(id)
-                .orElseThrow(RoomNotFoundException::new);
+        HotelRoom room = hotelRoomResolver.resolveById(id);
         return hotelRoomMapper.toRoomResponse(room);
     }
+
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<RoomResponse> getRoomsByHotelId(Long hotelId, Pageable pageable) {
-        hotelRepository.findById(hotelId)
-                .orElseThrow(HotelNotFoundException::new);
+        hotelResolver.resolveById(hotelId);
         Page<HotelRoom> hotelRoomsPage = hotelRoomRepository.findAllByHotelId(hotelId, pageable);
 
         return PagedResponse.from(hotelRoomsPage, hotelRoomMapper::toRoomResponse);
@@ -48,20 +50,22 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public RoomResponse createRoom(CreateRoomRequest roomRequest) {
-        Hotel hotel = getHotelById(roomRequest.getHotelId());
-        RoomType roomType = getRoomTypeById(roomRequest.getRoomTypeId());
+        Hotel hotel = hotelResolver.resolveById(roomRequest.getHotelId());
+        RoomType roomType = roomTypeResolver.resolveById(roomRequest.getRoomTypeId());
         HotelRoom room = hotelRoomMapper.toHotelRoom(roomRequest, hotel, roomType);
         room = hotelRoomRepository.save(room);
         return hotelRoomMapper.toRoomResponse(room);
     }
 
-    private Hotel getHotelById(Long hotelId) {
-        return hotelRepository.findById(hotelId)
-                .orElseThrow(HotelNotFoundException::new);
-    }
 
-    private RoomType getRoomTypeById(Long roomTypeId) {
-        return roomTypeRepository.findById(roomTypeId)
-                .orElseThrow(RoomNotFoundException::new);
+    @Override
+    @Transactional
+    public RoomResponse updateRoom(Long id, UpdateRoomRequest roomRequest) {
+        HotelRoom hotelRoom = hotelRoomResolver.resolveById(id);
+        RoomType roomType = roomTypeUpdateResolver.resolve(roomRequest, hotelRoom);
+
+        hotelRoomMapper.updateHotelRoom(roomRequest, hotelRoom, roomType);
+
+        return hotelRoomMapper.toRoomResponse(hotelRoom);
     }
 }

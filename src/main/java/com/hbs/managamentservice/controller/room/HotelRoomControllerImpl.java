@@ -1,6 +1,7 @@
 package com.hbs.managamentservice.controller.room;
 
 import com.hbs.managamentservice.dto.request.CreateRoomRequest;
+import com.hbs.managamentservice.dto.request.UpdateRoomRequest;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import com.hbs.managamentservice.dto.response.RoomResponse;
 import com.hbs.managamentservice.service.room.RoomService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,5 +44,12 @@ public class HotelRoomControllerImpl implements HotelRoomController {
     @ResponseStatus(HttpStatus.CREATED)
     public RoomResponse createRoom(@RequestBody @Valid CreateRoomRequest roomRequest) {
         return roomService.createRoom(roomRequest);
+    }
+
+    @Override
+    @PatchMapping("/rooms/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public RoomResponse updateRoom(@PathVariable Long id, @RequestBody @Valid UpdateRoomRequest roomRequest) {
+        return roomService.updateRoom(id, roomRequest);
     }
 }
