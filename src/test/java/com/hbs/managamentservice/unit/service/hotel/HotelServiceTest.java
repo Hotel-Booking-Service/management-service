@@ -95,11 +95,11 @@ class HotelServiceTest {
         Hotel hotel = getHotel();
 
         LocationResponse locationResponse = new LocationResponse("Test Country", "Test City", "Test Street", "Test Building", "Test Zip Code");
-        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of());
+        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of(), false, null);
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(hotelRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(hotel)));
+        when(hotelRepository.findAllByDeletedFalse(pageable)).thenReturn(new PageImpl<>(List.of(hotel)));
         when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
 
         PagedResponse<HotelResponse> actual = hotelService.getAllHotels(pageable);
@@ -111,7 +111,7 @@ class HotelServiceTest {
         assertEquals(0, actual.pageNumber());
         assertTrue(actual.last());
         assertEquals(actual.content().getFirst(), hotelResponse);
-        verify(hotelRepository).findAll(pageable);
+        verify(hotelRepository).findAllByDeletedFalse(pageable);
     }
 
     @Test
@@ -119,7 +119,7 @@ class HotelServiceTest {
         Hotel hotel = getHotel();
 
         LocationResponse locationResponse = new LocationResponse("Test Country", "Test City", "Test Street", "Test Building", "Test Zip Code");
-        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of());
+        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of(), false, null);
 
         when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
         when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.of(hotel));
@@ -145,7 +145,7 @@ class HotelServiceTest {
         Hotel hotel = getHotel();
 
         LocationResponse locationResponse = new LocationResponse("Test Country", "Test City", "Test Street", "Test Building", "Test Zip Code");
-        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of());
+        HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of(), false, null);
 
         when(hotelMapper.toEntity(any(CreateHotelRequest.class))).thenReturn(hotel);
         when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
@@ -159,6 +159,18 @@ class HotelServiceTest {
         verify(hotelMapper).toHotelResponse(hotel);
     }
 
+
+    @Test
+    void deleteHotel_shouldDeleteHotel() {
+        Hotel hotel = getHotel();
+
+        when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.of(hotel));
+
+        hotelService.deleteHotel(1L);
+
+        verify(hotelRepository).findById(1L);
+        verify(hotelRepository).save(hotel);
+    }
 
     private static CreateHotelRequest getCreateHotelRequest() {
         LocationRequest locationRequest = new LocationRequest();

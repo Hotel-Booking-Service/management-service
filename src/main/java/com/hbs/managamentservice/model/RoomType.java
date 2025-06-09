@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,8 +27,7 @@ public class RoomType {
     @Column(nullable = false)
     private RoomCategory name;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1500)
     private String description;
 
     @Enumerated(EnumType.STRING)

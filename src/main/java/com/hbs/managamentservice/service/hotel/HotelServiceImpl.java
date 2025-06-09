@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -29,19 +29,9 @@ public class HotelServiceImpl implements HotelService {
     @Override
     @Transactional(readOnly = true)
     public PagedResponse<HotelResponse> getAllHotels(Pageable pageable) {
-        Page<Hotel> hotelsPage = hotelRepository.findAll(pageable);
-        List<HotelResponse> content = hotelsPage.stream()
-                .map(hotelMapper::toHotelResponse)
-                .toList();
+        Page<Hotel> hotelsPage = hotelRepository.findAllByDeletedFalse(pageable);
 
-        return new PagedResponse<>(
-                content,
-                hotelsPage.getNumber(),
-                hotelsPage.getSize(),
-                hotelsPage.getTotalElements(),
-                hotelsPage.getTotalPages(),
-                hotelsPage.isLast()
-        );
+        return PagedResponse.from(hotelsPage, hotelMapper::toHotelResponse);
     }
 
     @Override
@@ -58,6 +48,16 @@ public class HotelServiceImpl implements HotelService {
         Hotel hotelEntity = hotelMapper.toEntity(hotel);
         hotelEntity = hotelRepository.save(hotelEntity);
         return hotelMapper.toHotelResponse(hotelEntity);
+    }
+
+    @Override
+    @Transactional
+    public void deleteHotel(Long id) {
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(HotelNotFoundException::new);
+        hotel.setDeleted(true);
+        hotel.setDeletedAt(LocalDateTime.now());
+        hotelRepository.save(hotel);
     }
 
     @Override

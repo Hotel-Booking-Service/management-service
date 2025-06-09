@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "Ответ с данными отеля")
@@ -33,6 +34,12 @@ public record HotelResponse(
                 schema = @Schema(type = "string", format = "uri"),
                 arraySchema = @Schema(description = "Список URL фотографий")
         )
-        List<URI> photos
+        List<URI> photos,
+
+        @Schema(description = "Статус удаления", example = "false")
+        boolean isDeleted,
+
+        @Schema(description = "Дата и время удаления", example = "2022-01-01T00:00:00Z")
+        LocalDateTime deletedAt
 ) {
 }

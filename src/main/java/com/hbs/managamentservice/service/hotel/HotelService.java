@@ -14,6 +14,8 @@ public interface HotelService {
 
     HotelResponse createHotel(CreateHotelRequest hotel);
 
+    void deleteHotel(Long id);
+
     HotelResponse patchHotel(Long id, UpdateHotelRequest request);
 
 }
