@@ -1,9 +1,9 @@
 package com.hbs.managamentservice.unit.service.room;
 
 import com.hbs.managamentservice.dto.request.CreateRoomRequest;
+import com.hbs.managamentservice.dto.request.UpdateRoomRequest;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import com.hbs.managamentservice.dto.response.RoomResponse;
-import com.hbs.managamentservice.exception.domain.room.RoomNotFoundException;
 import com.hbs.managamentservice.mapper.HotelRoomMapper;
 import com.hbs.managamentservice.model.BedType;
 import com.hbs.managamentservice.model.Hotel;
@@ -13,9 +13,11 @@ import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.model.RoomCategory;
 import com.hbs.managamentservice.model.RoomType;
-import com.hbs.managamentservice.repository.HotelRepository;
 import com.hbs.managamentservice.repository.HotelRoomRepository;
-import com.hbs.managamentservice.repository.RoomTypeRepository;
+import com.hbs.managamentservice.resolver.HotelResolver;
+import com.hbs.managamentservice.resolver.HotelRoomResolver;
+import com.hbs.managamentservice.resolver.RoomTypeResolver;
+import com.hbs.managamentservice.resolver.RoomTypeUpdateResolver;
 import com.hbs.managamentservice.service.room.RoomServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,11 +30,9 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -42,10 +42,16 @@ import static org.mockito.Mockito.when;
 class RoomServiceTest {
 
     @Mock
-    private RoomTypeRepository roomTypeRepository;
+    private RoomTypeResolver roomTypeResolver;
 
     @Mock
-    private HotelRepository hotelRepository;
+    private HotelResolver hotelResolver;
+
+    @Mock
+    private HotelRoomResolver hotelRoomResolver;
+
+    @Mock
+    private RoomTypeUpdateResolver roomTypeUpdateResolver;
 
     @Mock
     private HotelRoomRepository hotelRoomRepository;
@@ -65,7 +71,7 @@ class RoomServiceTest {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(hotelRepository.findById(1L)).thenReturn(Optional.of(hotel));
+        when(hotelResolver.resolveById(1L)).thenReturn(hotel);
         when(hotelRoomRepository.findAllByHotelId(1L, pageable)).thenReturn(new PageImpl<>(List.of(hotelRoom)));
         when(hotelRoomMapper.toRoomResponse(any(HotelRoom.class))).thenReturn(roomResponse);
 
@@ -78,7 +84,7 @@ class RoomServiceTest {
         assertEquals(0, actual.pageNumber());
         assertTrue(actual.last());
         assertEquals(actual.content().getFirst(), roomResponse);
-        verify(hotelRepository).findById(1L);
+        verify(hotelResolver).resolveById(1L);
         verify(hotelRoomRepository).findAllByHotelId(1L, pageable);
         verify(hotelRoomMapper).toRoomResponse(any(HotelRoom.class));
     }
@@ -89,22 +95,15 @@ class RoomServiceTest {
 
         RoomResponse roomResponse = new RoomResponse(1L, 1L, 1L, "Test Room Number", 5, HotelRoomStatus.FREE, BigDecimal.valueOf(150));
 
+        when(hotelRoomResolver.resolveById(any(Long.class))).thenReturn(hotelRoom);
         when(hotelRoomMapper.toRoomResponse(any(HotelRoom.class))).thenReturn(roomResponse);
-        when(hotelRoomRepository.findById(any(Long.class))).thenReturn(Optional.of(hotelRoom));
 
         RoomResponse actual = roomService.getRoomById(1L);
 
         assertNotNull(actual);
         assertEquals(actual, roomResponse);
-        verify(hotelRoomRepository).findById(1L);
+        verify(hotelRoomResolver).resolveById(1L);
         verify(hotelRoomMapper).toRoomResponse(any(HotelRoom.class));
-    }
-
-    @Test
-    void getHotelRoomById_shouldThrowException_whenHotelRoomNotFound() {
-        when(hotelRoomRepository.findById(any(Long.class))).thenReturn(Optional.empty());
-
-        assertThrows(RoomNotFoundException.class, () -> roomService.getRoomById(1L));
     }
 
     @Test
@@ -113,8 +112,8 @@ class RoomServiceTest {
 
         RoomResponse roomResponse = new RoomResponse(1L, 1L, 1L, "Test Room Number", 5, HotelRoomStatus.FREE, BigDecimal.valueOf(150));
 
-        when(hotelRepository.findById(1L)).thenReturn(Optional.of(hotelRoom.getHotel()));
-        when(roomTypeRepository.findById(1L)).thenReturn(Optional.of(hotelRoom.getRoomType()));
+        when(hotelResolver.resolveById(1L)).thenReturn(hotelRoom.getHotel());
+        when(roomTypeResolver.resolveById(1L)).thenReturn(hotelRoom.getRoomType());
         when(hotelRoomMapper.toHotelRoom(any(CreateRoomRequest.class), any(Hotel.class), any(RoomType.class))).thenReturn(hotelRoom);
         when(hotelRoomMapper.toRoomResponse(any(HotelRoom.class))).thenReturn(roomResponse);
         when(hotelRoomRepository.save(any(HotelRoom.class))).thenReturn(hotelRoom);
@@ -135,7 +134,28 @@ class RoomServiceTest {
         verify(hotelRoomMapper).toRoomResponse(any(HotelRoom.class));
     }
 
-    private static HotelRoom getHotelRoom() {
+    @Test
+    void updateHotelRoom_shouldReturnRoomResponse() {
+        HotelRoom hotelRoom = getHotelRoom();
+
+        RoomResponse roomResponse = new RoomResponse(1L, 1L, 1L, "Test Room Number", 5, HotelRoomStatus.FREE, BigDecimal.valueOf(150));
+
+        when(hotelRoomResolver.resolveById(1L)).thenReturn(hotelRoom);
+        when(roomTypeUpdateResolver.resolve(any(UpdateRoomRequest.class), any(HotelRoom.class))).thenReturn(hotelRoom.getRoomType());
+        when(hotelRoomMapper.toRoomResponse(any(HotelRoom.class))).thenReturn(roomResponse);
+
+        UpdateRoomRequest roomRequest = new UpdateRoomRequest();
+        roomRequest.setStatus(HotelRoomStatus.BUSY);
+        roomRequest.setPricePerNight(BigDecimal.valueOf(150));
+
+        RoomResponse actual = roomService.updateRoom(1L, roomRequest);
+
+        assertNotNull(actual);
+        assertEquals(actual, roomResponse);
+        verify(hotelRoomMapper).toRoomResponse(any(HotelRoom.class));
+    }
+
+    private HotelRoom getHotelRoom() {
         Hotel hotel = getHotel();
 
         RoomType roomType = new RoomType();
