@@ -1,6 +1,7 @@
 package com.hbs.managamentservice.controller.hotel;
 
 import com.hbs.managamentservice.dto.request.CreateHotelRequest;
+import com.hbs.managamentservice.dto.request.UpdateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -92,6 +94,24 @@ public interface HotelController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     HotelResponse createHotel(@RequestBody @Valid CreateHotelRequest hotel);
+
+    @Operation(
+            summary = "Частичное обновление отеля",
+            description = "Обновляет только указные поля у отеля."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Отель успешно обновлен",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = HotelResponse.class)
+            )
+    )
+    @PatchMapping("/{hotelId}")
+    @ResponseStatus(HttpStatus.OK)
+    HotelResponse updateHotel(@PathVariable Long hotelId, @Valid @RequestBody UpdateHotelRequest request);
+
+
 
     @Operation(
             summary = "Удалить отель",

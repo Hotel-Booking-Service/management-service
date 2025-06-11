@@ -2,15 +2,17 @@ package com.hbs.managamentservice.unit.service.hotel;
 
 import com.hbs.managamentservice.dto.request.CreateHotelRequest;
 import com.hbs.managamentservice.dto.request.LocationRequest;
+import com.hbs.managamentservice.dto.request.UpdateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.LocationResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
-import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.mapper.HotelMapper;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelStatus;
 import com.hbs.managamentservice.model.Location;
 import com.hbs.managamentservice.repository.HotelRepository;
+import com.hbs.managamentservice.resolver.HotelRelationResolver;
+import com.hbs.managamentservice.resolver.HotelResolver;
 import com.hbs.managamentservice.service.hotel.HotelServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,13 +24,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,8 +43,49 @@ class HotelServiceTest {
     @Mock
     private HotelMapper hotelMapper;
 
+    @Mock
+    private HotelResolver hotelResolver;
+
+    @Mock
+    private HotelRelationResolver hotelRelationResolver;
+
     @InjectMocks
     private HotelServiceImpl hotelService;
+
+    @Test
+    void updateHotel_shouldUpdateAllFieldsSuccessfully() {
+        Long hotelId = 1L;
+
+        UpdateHotelRequest request = new UpdateHotelRequest();
+        request.setName("Updated Hotel");
+        request.setDescription("Updated Desc");
+        request.setStars(4);
+        request.setStatus(HotelStatus.ACTIVE);
+        request.setLocationId(10L);
+        request.setManagerId(20L);
+        request.setAmenityIds(Set.of(100L, 200L));
+
+        Hotel hotel = new Hotel();
+
+        HotelResponse hotelResponse = HotelResponse.builder()
+                .id(hotelId)
+                .name("Updated Hotel")
+                .description("Updated Desc")
+                .build();
+
+        when(hotelResolver.resolveById(hotelId)).thenReturn(hotel);
+        doNothing().when(hotelRelationResolver).resolveRelations(request, hotel);
+        when(hotelMapper.toHotelResponse(hotel)).thenReturn(hotelResponse);
+
+        HotelResponse actual = hotelService.updateHotel(hotelId, request);
+
+        assertNotNull(actual);
+        assertEquals(hotelResponse.name(), actual.name());
+
+        verify(hotelResolver).resolveById(hotelId);
+        verify(hotelMapper).updateHotelFromPatchRequest(request, hotel);
+        verify(hotelMapper).toHotelResponse(hotel);
+    }
 
     @Test
     void getAllHotels_shouldReturnHotelResponseList() {
@@ -75,21 +118,14 @@ class HotelServiceTest {
         LocationResponse locationResponse = new LocationResponse("Test Country", "Test City", "Test Street", "Test Building", "Test Zip Code");
         HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of(), false, null);
 
+        when(hotelResolver.resolveById(any(Long.class))).thenReturn(hotel);
         when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
-        when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.of(hotel));
 
         HotelResponse actual = hotelService.getHotelById(1L);
 
         assertNotNull(actual);
         assertEquals(actual, hotelResponse);
-        verify(hotelRepository).findById(1L);
-    }
-
-    @Test
-    void getHotelById_shouldThrowException_whenHotelNotFound() {
-        when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.empty());
-
-        assertThrows(HotelNotFoundException.class, () -> hotelService.getHotelById(1L));
+        verify(hotelResolver).resolveById(1L);
     }
 
     @Test
@@ -113,15 +149,16 @@ class HotelServiceTest {
         verify(hotelMapper).toHotelResponse(hotel);
     }
 
+
     @Test
     void deleteHotel_shouldDeleteHotel() {
         Hotel hotel = getHotel();
 
-        when(hotelRepository.findById(any(Long.class))).thenReturn(Optional.of(hotel));
+        when(hotelResolver.resolveById(any(Long.class))).thenReturn(hotel);
 
         hotelService.deleteHotel(1L);
 
-        verify(hotelRepository).findById(1L);
+        verify(hotelResolver).resolveById(1L);
         verify(hotelRepository).save(hotel);
     }
 

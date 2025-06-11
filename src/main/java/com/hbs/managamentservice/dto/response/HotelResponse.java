@@ -3,12 +3,14 @@ package com.hbs.managamentservice.dto.response;
 import com.hbs.managamentservice.model.HotelStatus;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Schema(description = "Ответ с данными отеля")
+@Builder
 public record HotelResponse(
         @Schema(description = "Уникальный идентификатор", example = "123")
         Long id,

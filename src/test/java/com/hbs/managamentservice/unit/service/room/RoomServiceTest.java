@@ -15,9 +15,9 @@ import com.hbs.managamentservice.model.RoomCategory;
 import com.hbs.managamentservice.model.RoomType;
 import com.hbs.managamentservice.repository.HotelRoomRepository;
 import com.hbs.managamentservice.resolver.HotelResolver;
+import com.hbs.managamentservice.resolver.HotelRoomRelationResolver;
 import com.hbs.managamentservice.resolver.HotelRoomResolver;
 import com.hbs.managamentservice.resolver.RoomTypeResolver;
-import com.hbs.managamentservice.resolver.RoomTypeUpdateResolver;
 import com.hbs.managamentservice.service.room.RoomServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,13 +51,13 @@ class RoomServiceTest {
     private HotelRoomResolver hotelRoomResolver;
 
     @Mock
-    private RoomTypeUpdateResolver roomTypeUpdateResolver;
-
-    @Mock
     private HotelRoomRepository hotelRoomRepository;
 
     @Mock
     private HotelRoomMapper hotelRoomMapper;
+
+    @Mock
+    private HotelRoomRelationResolver hotelRoomRelationResolver;
 
     @InjectMocks
     private RoomServiceImpl roomService;
@@ -141,7 +141,6 @@ class RoomServiceTest {
         RoomResponse roomResponse = new RoomResponse(1L, 1L, 1L, "Test Room Number", 5, HotelRoomStatus.FREE, BigDecimal.valueOf(150));
 
         when(hotelRoomResolver.resolveById(1L)).thenReturn(hotelRoom);
-        when(roomTypeUpdateResolver.resolve(any(UpdateRoomRequest.class), any(HotelRoom.class))).thenReturn(hotelRoom.getRoomType());
         when(hotelRoomMapper.toRoomResponse(any(HotelRoom.class))).thenReturn(roomResponse);
 
         UpdateRoomRequest roomRequest = new UpdateRoomRequest();
