@@ -4,11 +4,11 @@ import com.hbs.managamentservice.dto.request.CreateHotelRequest;
 import com.hbs.managamentservice.dto.request.UpdateHotelRequest;
 import com.hbs.managamentservice.dto.response.HotelResponse;
 import com.hbs.managamentservice.dto.response.PagedResponse;
-import com.hbs.managamentservice.exception.domain.hotel.HotelNotFoundException;
 import com.hbs.managamentservice.mapper.HotelMapper;
 import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.repository.HotelRepository;
-import com.hbs.managamentservice.validation.HotelEntityFetcher;
+import com.hbs.managamentservice.resolver.HotelRelationResolver;
+import com.hbs.managamentservice.resolver.HotelResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +23,8 @@ public class HotelServiceImpl implements HotelService {
 
     private final HotelMapper hotelMapper;
     private final HotelRepository hotelRepository;
-    private final HotelEntityFetcher hotelFetcher;
     private final HotelRelationResolver hotelRelationResolver;
+    private final HotelResolver hotelResolver;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,9 +37,8 @@ public class HotelServiceImpl implements HotelService {
     @Override
     @Transactional(readOnly = true)
     public HotelResponse getHotelById(Long id) {
-        return hotelRepository.findById(id)
-                .map(hotelMapper::toHotelResponse)
-                .orElseThrow(HotelNotFoundException::new);
+        Hotel hotel = hotelResolver.resolveById(id);
+        return hotelMapper.toHotelResponse(hotel);
     }
 
     @Override
@@ -52,25 +51,22 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     @Transactional
-    public void deleteHotel(Long id) {
-        Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(HotelNotFoundException::new);
-        hotel.setDeleted(true);
-        hotel.setDeletedAt(LocalDateTime.now());
-        hotelRepository.save(hotel);
-    }
+    public HotelResponse updateHotel(Long id, UpdateHotelRequest request) {
+        Hotel hotel = hotelResolver.resolveById(id);
 
-    @Override
-    @Transactional
-    public HotelResponse patchHotel(Long id, UpdateHotelRequest request) {
-
-        Hotel hotel = hotelFetcher.fetchHotel(id);
-
-        hotelRelationResolver.resolveRelations(hotel, request);
+        hotelRelationResolver.resolveRelations(request, hotel);
 
         hotelMapper.updateHotelFromPatchRequest(request, hotel);
 
         return hotelMapper.toHotelResponse(hotel);
     }
 
+    @Override
+    @Transactional
+    public void deleteHotel(Long id) {
+        Hotel hotel = hotelResolver.resolveById(id);
+        hotel.setDeleted(true);
+        hotel.setDeletedAt(LocalDateTime.now());
+        hotelRepository.save(hotel);
+    }
 }

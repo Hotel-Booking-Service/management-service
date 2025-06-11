@@ -16,6 +16,6 @@ public interface HotelService {
 
     void deleteHotel(Long id);
 
-    HotelResponse patchHotel(Long id, UpdateHotelRequest request);
+    HotelResponse updateHotel(Long id, UpdateHotelRequest request);
 
 }

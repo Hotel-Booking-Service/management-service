@@ -10,9 +10,9 @@ import com.hbs.managamentservice.model.HotelRoom;
 import com.hbs.managamentservice.model.RoomType;
 import com.hbs.managamentservice.repository.HotelRoomRepository;
 import com.hbs.managamentservice.resolver.HotelResolver;
+import com.hbs.managamentservice.resolver.HotelRoomRelationResolver;
 import com.hbs.managamentservice.resolver.HotelRoomResolver;
 import com.hbs.managamentservice.resolver.RoomTypeResolver;
-import com.hbs.managamentservice.resolver.RoomTypeUpdateResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ public class RoomServiceImpl implements RoomService {
     private final HotelRoomResolver hotelRoomResolver;
     private final RoomTypeResolver roomTypeResolver;
     private final HotelResolver hotelResolver;
-    private final RoomTypeUpdateResolver roomTypeUpdateResolver;
+    private final HotelRoomRelationResolver hotelRoomRelationResolver;
 
     @Override
     @Transactional(readOnly = true)
@@ -62,9 +62,10 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public RoomResponse updateRoom(Long id, UpdateRoomRequest roomRequest) {
         HotelRoom hotelRoom = hotelRoomResolver.resolveById(id);
-        RoomType roomType = roomTypeUpdateResolver.resolve(roomRequest, hotelRoom);
 
-        hotelRoomMapper.updateHotelRoom(roomRequest, hotelRoom, roomType);
+        hotelRoomRelationResolver.resolveRelations(roomRequest, hotelRoom);
+
+        hotelRoomMapper.updateHotelRoom(roomRequest, hotelRoom);
 
         return hotelRoomMapper.toRoomResponse(hotelRoom);
     }

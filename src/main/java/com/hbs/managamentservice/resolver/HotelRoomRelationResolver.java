@@ -8,14 +8,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RoomTypeUpdateResolver {
+public class HotelRoomRelationResolver {
 
     private final RoomTypeResolver roomTypeResolver;
 
-    public RoomType resolve(UpdateRoomRequest request, HotelRoom currentRoom) {
-        if (request.getRoomTypeId() == null) {
-            return currentRoom.getRoomType();
+    public void resolveRelations(UpdateRoomRequest request, HotelRoom hotelRoom) {
+        if (request.getRoomTypeId() != null) {
+            RoomType roomType = roomTypeResolver.resolveById(request.getRoomTypeId());
+
+            hotelRoom.setRoomType(roomType);
         }
-        return roomTypeResolver.resolveById(request.getRoomTypeId());
     }
 }

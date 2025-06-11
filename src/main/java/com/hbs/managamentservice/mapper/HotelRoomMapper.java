@@ -7,7 +7,6 @@ import com.hbs.managamentservice.model.Hotel;
 import com.hbs.managamentservice.model.HotelRoom;
 import com.hbs.managamentservice.model.RoomType;
 import org.mapstruct.BeanMapping;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -31,6 +30,5 @@ public interface HotelRoomMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     @Mapping(target = "status", source = "roomRequest.status")
-    @Mapping(target = "roomType", expression = "java(roomType != null ? roomType : hotelRoom.getRoomType())")
-    void updateHotelRoom(UpdateRoomRequest roomRequest, @MappingTarget HotelRoom hotelRoom, @Context RoomType roomType);
+    void updateHotelRoom(UpdateRoomRequest roomRequest, @MappingTarget HotelRoom hotelRoom);
 }

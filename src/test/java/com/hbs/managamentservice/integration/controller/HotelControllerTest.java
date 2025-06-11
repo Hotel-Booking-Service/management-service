@@ -37,7 +37,7 @@ class HotelControllerTest {
 
     @Test
     @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml"}, cleanBefore = true, cleanAfter = true)
-    void testPatchHotel() {
+    void testUpdateHotel() {
         UpdateHotelRequest updateHotelRequest = new UpdateHotelRequest();
         updateHotelRequest.setName("Hotel Update");
         HotelResponse response = testRestTemplate.patchForObject(
