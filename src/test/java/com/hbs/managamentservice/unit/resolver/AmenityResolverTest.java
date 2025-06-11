@@ -58,6 +58,14 @@ class AmenityResolverTest {
     }
 
     @Test
+    void resolveByIds_shouldReturnEmptySet() {
+        Set<Long> ids = Set.of(1L, 2L);
+        when(amenityRepository.findAllById(ids)).thenReturn(List.of());
+
+        assertThrows(AmenityNotFoundException.class, () -> amenityResolver.resolveByIds(ids));
+    }
+
+    @Test
     void resolveById_shouldThrowNotFound() {
         Long id = 1L;
         when(amenityRepository.findById(id)).thenReturn(Optional.empty());
