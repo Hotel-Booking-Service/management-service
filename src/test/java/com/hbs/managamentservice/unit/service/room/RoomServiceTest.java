@@ -15,6 +15,7 @@ import com.hbs.managamentservice.model.RoomCategory;
 import com.hbs.managamentservice.model.RoomType;
 import com.hbs.managamentservice.repository.HotelRoomRepository;
 import com.hbs.managamentservice.resolver.HotelResolver;
+import com.hbs.managamentservice.resolver.HotelRoomRelationResolver;
 import com.hbs.managamentservice.resolver.HotelRoomResolver;
 import com.hbs.managamentservice.resolver.RoomTypeResolver;
 import com.hbs.managamentservice.service.room.RoomServiceImpl;
@@ -54,6 +55,9 @@ class RoomServiceTest {
 
     @Mock
     private HotelRoomMapper hotelRoomMapper;
+
+    @Mock
+    private HotelRoomRelationResolver hotelRoomRelationResolver;
 
     @InjectMocks
     private RoomServiceImpl roomService;

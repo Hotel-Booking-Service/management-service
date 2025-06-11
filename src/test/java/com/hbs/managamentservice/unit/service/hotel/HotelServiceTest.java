@@ -118,14 +118,14 @@ class HotelServiceTest {
         LocationResponse locationResponse = new LocationResponse("Test Country", "Test City", "Test Street", "Test Building", "Test Zip Code");
         HotelResponse hotelResponse = new HotelResponse(1L, "Test Hotel", "Test Description", 5, HotelStatus.PLANNED, locationResponse, List.of(), false, null);
 
-        when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
         when(hotelResolver.resolveById(any(Long.class))).thenReturn(hotel);
+        when(hotelMapper.toHotelResponse(any(Hotel.class))).thenReturn(hotelResponse);
 
         HotelResponse actual = hotelService.getHotelById(1L);
 
         assertNotNull(actual);
         assertEquals(actual, hotelResponse);
-        verify(hotelRepository).findById(1L);
+        verify(hotelResolver).resolveById(1L);
     }
 
     @Test
@@ -158,7 +158,7 @@ class HotelServiceTest {
 
         hotelService.deleteHotel(1L);
 
-        verify(hotelRepository).findById(1L);
+        verify(hotelResolver).resolveById(1L);
         verify(hotelRepository).save(hotel);
     }
 
