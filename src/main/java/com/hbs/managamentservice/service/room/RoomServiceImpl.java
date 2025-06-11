@@ -57,7 +57,6 @@ public class RoomServiceImpl implements RoomService {
         return hotelRoomMapper.toRoomResponse(room);
     }
 
-
     @Override
     @Transactional
     public RoomResponse updateRoom(Long id, UpdateRoomRequest roomRequest) {
@@ -68,5 +67,12 @@ public class RoomServiceImpl implements RoomService {
         hotelRoomMapper.updateHotelRoom(roomRequest, hotelRoom);
 
         return hotelRoomMapper.toRoomResponse(hotelRoom);
+    }
+
+    @Override
+    @Transactional
+    public void deleteRoom(Long id) {
+        HotelRoom hotelRoom = hotelRoomResolver.resolveById(id);
+        hotelRoomRepository.delete(hotelRoom);
     }
 }
