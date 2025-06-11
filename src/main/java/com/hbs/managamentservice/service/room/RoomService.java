@@ -15,4 +15,6 @@ public interface RoomService {
     RoomResponse createRoom(CreateRoomRequest roomRequest);
 
     RoomResponse updateRoom(Long id, UpdateRoomRequest roomRequest);
+
+    void deleteRoom(Long id);
 }

@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -152,6 +153,18 @@ class RoomServiceTest {
         assertNotNull(actual);
         assertEquals(actual, roomResponse);
         verify(hotelRoomMapper).toRoomResponse(any(HotelRoom.class));
+    }
+
+    @Test
+    void deleteHotelRoom_shouldDeleteHotelRoom() {
+        HotelRoom hotelRoom = getHotelRoom();
+
+        when(hotelRoomResolver.resolveById(1L)).thenReturn(hotelRoom);
+        doNothing().when(hotelRoomRepository).delete(any(HotelRoom.class));
+
+        roomService.deleteRoom(1L);
+
+        verify(hotelRoomRepository).delete(any(HotelRoom.class));
     }
 
     private HotelRoom getHotelRoom() {

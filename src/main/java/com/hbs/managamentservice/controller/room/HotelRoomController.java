@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,4 +59,13 @@ public interface HotelRoomController {
     @PatchMapping("/rooms/{id}")
     @ResponseStatus(HttpStatus.OK)
     RoomResponse updateRoom(@PathVariable Long id, @RequestBody @Valid UpdateRoomRequest roomRequest);
+
+    @Operation(
+            summary = "Удалить комнату",
+            description = "Удалить комнату"
+    )
+    @ApiResponse(responseCode = "204", description = "Комната удалена")
+    @DeleteMapping("/rooms/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteRoom(@PathVariable Long id);
 }

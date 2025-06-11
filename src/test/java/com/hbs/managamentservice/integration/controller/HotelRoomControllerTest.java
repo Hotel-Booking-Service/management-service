@@ -119,4 +119,17 @@ class HotelRoomControllerTest {
         assertThat(response.getBody().pricePerNight()).isEqualTo(BigDecimal.valueOf(150.0));
         assertThat(response.getBody().status()).isEqualTo(HotelRoomStatus.BUSY);
     }
+
+    @Test
+    @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml", "dataset/roomtype/room-types.yaml", "dataset/room/rooms.yaml"}, cleanBefore = true)
+    void testDeleteHotelRoom() {
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                "/api/v1/rooms/1",
+                HttpMethod.DELETE,
+                null,
+                Void.class
+        );
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
 }
