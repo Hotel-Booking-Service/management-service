@@ -31,3 +31,17 @@ storage:
     path:
       delim: /
     url-expiration-seconds: 900
+
+
+management:
+  endpoint:
+    env:
+      show-values: always
+  endpoints:
+    web:
+      exposure:
+        include: env
+
+logging:
+  level:
+    com.hbs.managamentservice: DEBUG

@@ -4,8 +4,11 @@ import com.hbs.managamentservice.exception.domain.storage.EmptyFileException;
 import com.hbs.managamentservice.exception.domain.storage.FileNotFoundException;
 import com.hbs.managamentservice.exception.domain.storage.StorageException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -20,6 +23,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3StorageService implements StorageService {
@@ -35,15 +39,18 @@ public class S3StorageService implements StorageService {
     @Override
     public String upload(MultipartFile file, String path) {
         if (file.isEmpty()) throw new EmptyFileException();
+        if (path == null || path.isEmpty()) path = "";
 
         String key = path + s3PathDelim + UUID.randomUUID();
         try {
+            log.info("Uploading file to S3: {}", file.getOriginalFilename());
             s3Client.putObject(
                     PutObjectRequest.builder()
                             .bucket(bucket)
                             .key(key)
                             .contentType(file.getContentType())
-                            .build(), RequestBody.fromBytes(file.getBytes())
+                            .build(),
+                    RequestBody.fromBytes(file.getBytes())
             );
         } catch (IOException e) {
             throw new StorageException("Failed to lay out the file in S3:" + file.getOriginalFilename(), e);
@@ -73,7 +80,17 @@ public class S3StorageService implements StorageService {
                 .bucket(bucket)
                 .key(s3Key)
                 .build();
-        s3Client.deleteObject(deleteObjectRequest);
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    s3Client.deleteObject(deleteObjectRequest);
+                }
+            });
+        } else {
+            s3Client.deleteObject(deleteObjectRequest);
+        }
     }
 
 }
