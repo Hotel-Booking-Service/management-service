@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-      - HBS-37
+      - feature/HBS-37
   pull_request:
     branches:
       - master
