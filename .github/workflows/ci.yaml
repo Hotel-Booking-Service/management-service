@@ -18,6 +18,11 @@ jobs:
   build:
     runs-on: ubuntu-22.04
 
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,11 +43,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Assemble project
         run: ./gradlew assemble --no-daemon --info --build-cache
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
       - name: Upload initial build
         uses: actions/upload-artifact@v4
@@ -168,33 +181,15 @@ jobs:
     needs: integration-tests
     runs-on: ubuntu-22.04
 
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ['java']
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: build-initial
           path: build/
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
 
       - name: Download JaCoCo Report
         uses: actions/download-artifact@v4
