@@ -187,6 +187,12 @@ jobs:
         with:
           languages: ${{ matrix.language }}
 
+      - name: Build project for CodeQL analysis
+        run: ./gradlew assemble --no-daemon --info --build-cache
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
       - name: Download final build
         uses: actions/download-artifact@v4
         with:
@@ -200,9 +206,6 @@ jobs:
           path: |
             build/reports/jacoco/test/html/
             build/reports/jacoco/test/jacocoTestReport.xml
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
 
       - name: SonarQube Scan
         uses: sonarsource/sonarcloud-github-action@master
