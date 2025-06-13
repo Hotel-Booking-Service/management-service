@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -76,21 +74,10 @@ public class S3StorageService implements StorageService {
 
     @Override
     public void delete(String s3Key) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+        DeleteObjectRequest.builder()
                 .bucket(bucket)
                 .key(s3Key)
                 .build();
-
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    s3Client.deleteObject(deleteObjectRequest);
-                }
-            });
-        } else {
-            s3Client.deleteObject(deleteObjectRequest);
-        }
     }
 
 }
