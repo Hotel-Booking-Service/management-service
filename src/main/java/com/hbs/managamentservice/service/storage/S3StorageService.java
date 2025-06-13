@@ -74,10 +74,11 @@ public class S3StorageService implements StorageService {
 
     @Override
     public void delete(String s3Key) {
-        DeleteObjectRequest.builder()
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucket)
                 .key(s3Key)
                 .build();
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
 }
