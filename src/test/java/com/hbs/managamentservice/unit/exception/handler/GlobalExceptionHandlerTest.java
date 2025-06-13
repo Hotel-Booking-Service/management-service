@@ -2,8 +2,10 @@ package com.hbs.managamentservice.unit.exception.handler;
 
 import com.hbs.managamentservice.dto.response.ErrorResponse;
 import com.hbs.managamentservice.dto.response.ValidationErrorResponse;
+import com.hbs.managamentservice.exception.base.ConflictException;
 import com.hbs.managamentservice.exception.base.InvalidException;
 import com.hbs.managamentservice.exception.base.NotFoundException;
+import com.hbs.managamentservice.exception.domain.amenity.AmenityAlreadyExistsException;
 import com.hbs.managamentservice.exception.domain.storage.EmptyFileException;
 import com.hbs.managamentservice.exception.domain.storage.FileNotFoundException;
 import com.hbs.managamentservice.exception.handler.GlobalExceptionHandler;
@@ -76,6 +78,25 @@ class GlobalExceptionHandlerTest {
         assertEquals("/", actualErrorResponse.path());
         assertTrue(actualErrorResponse.errors().isEmpty());
         verify(exceptionMapper).toErrorResponse(notFoundException, "/");
+    }
+
+    @Test
+    void handleConflictException_shouldReturnErrorResponse() {
+        ConflictException ex = new AmenityAlreadyExistsException();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), 409, ex.getMessage(),
+                "Conflict", "/api/test", List.of());
+
+        when(request.getRequestURI()).thenReturn("/api/test");
+        when(exceptionMapper.toErrorResponse(ex, "/api/test")).thenReturn(errorResponse);
+
+        ErrorResponse response = exceptionHandler.handlerConflictException(ex, request);
+
+        assertEquals(HttpStatus.CONFLICT.value(), response.status());
+        assertEquals("Amenity already exists", response.error());
+        assertEquals("Conflict", response.message());
+        assertEquals("/api/test", response.path());
+        assertTrue(response.errors().isEmpty());
     }
 
     @Test

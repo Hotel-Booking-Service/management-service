@@ -1,0 +1,4 @@
+amenity:
+  - id: 1
+    name: Test Amenity
+    icon: icons/amenity/test.png

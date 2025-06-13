@@ -2,6 +2,7 @@ package com.hbs.managamentservice.exception.handler;
 
 import com.hbs.managamentservice.dto.response.ErrorResponse;
 import com.hbs.managamentservice.dto.response.ValidationErrorResponse;
+import com.hbs.managamentservice.exception.base.ConflictException;
 import com.hbs.managamentservice.exception.base.InvalidException;
 import com.hbs.managamentservice.exception.base.NotFoundException;
 import com.hbs.managamentservice.mapper.ExceptionMapper;
@@ -32,6 +33,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     public ErrorResponse handleNotFoundException(NotFoundException ex, HttpServletRequest request) {
+        return exceptionMapper.toErrorResponse(ex, request.getRequestURI());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ConflictException.class)
+    public ErrorResponse handlerConflictException(ConflictException ex, HttpServletRequest request) {
         return exceptionMapper.toErrorResponse(ex, request.getRequestURI());
     }
 
