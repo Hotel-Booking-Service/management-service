@@ -72,6 +72,7 @@ class AmenityControllerTest {
     }
 
     @Test
+    @DataSet(cleanAfter = true, cleanBefore = true)
     void testCreateAmenity() {
         ByteArrayResource fileAsResource = new ByteArrayResource("test".getBytes()) {
             @Override
@@ -116,7 +117,8 @@ class AmenityControllerTest {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("name", "Test Amenity");
 
-        HttpHeaders headers = createFileHeaders();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
@@ -142,12 +144,5 @@ class AmenityControllerTest {
         );
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    }
-
-    private HttpHeaders createFileHeaders() {
-        HttpHeaders fileHeaders = new HttpHeaders();
-        fileHeaders.setContentDispositionFormData("icon", "test.jpg");
-        fileHeaders.setContentType(MediaType.parseMediaType("image/jpeg"));
-        return fileHeaders;
     }
 }
