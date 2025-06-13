@@ -187,17 +187,14 @@ jobs:
         with:
           languages: ${{ matrix.language }}
 
-      - name: Build project for CodeQL analysis
-        run: ./gradlew assemble --no-daemon --info --build-cache
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-initial
+          path: build/
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-
-      - name: Download final build
-        uses: actions/download-artifact@v4
-        with:
-          name: build-final
-          path: build/
 
       - name: Download JaCoCo Report
         uses: actions/download-artifact@v4
