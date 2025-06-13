@@ -100,21 +100,22 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test --no-daemon --info --build-cache
 
-      - name: Publish Unit Test Results
-        uses: dorny/test-reporter@v2.1.0
-        if: always()
-        with:
-          name: Unit Tests
-          path: 'build/test-results/test/*.xml'
-          reporter: java-junit
-          fail-on-error: false
-
       - name: Upload updated build
         uses: actions/upload-artifact@v4
         with:
           name: build-after-unit
           path: build/
           retention-days: 1
+
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: |
+            build/test-results/test/
+            build/reports/tests/test/
+          retention-days: 7
 
   integration-tests:
     needs: unit-tests
@@ -166,15 +167,6 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
         run: ./gradlew integrationTest --no-daemon --info --build-cache
 
-      - name: Publish Integration Test Results
-        uses: dorny/test-reporter@v2.1.0
-        if: always()
-        with:
-          name: Integration Tests
-          path: 'build/test-results/integrationTest/*.xml'
-          reporter: java-junit
-          fail-on-error: false
-
       - name: Generate JaCoCo Report
         run: ./gradlew jacocoTestReport --no-daemon
 
@@ -194,6 +186,58 @@ jobs:
             build/reports/jacoco/test/html/
             build/reports/jacoco/test/jacocoTestReport.xml
           retention-days: 7
+
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: |
+            build/test-results/integrationTest/
+            build/reports/tests/integrationTest/
+          retention-days: 7
+
+  test-reporter:
+    needs: [unit-tests, integration-tests]
+    runs-on: ubuntu-22.04
+    if: always()
+
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Download unit test results
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-results
+          path: unit-test-results/
+
+      - name: Download integration test results
+        uses: actions/download-artifact@v4
+        with:
+          name: integration-test-results
+          path: integration-test-results/
+
+      - name: Unit Test Reporter
+        uses: dorny/test-reporter@v2.1.0
+        if: always()
+        with:
+          name: Unit Tests
+          path: 'unit-test-results/test-results/test/*.xml'
+          reporter: java-junit
+          fail-on-error: true
+
+      - name: Integration Test Reporter
+        uses: dorny/test-reporter@v2.1.0
+        if: always()
+        with:
+          name: Integration Tests
+          path: 'integration-test-results/test-results/integrationTest/*.xml'
+          reporter: java-junit
+          fail-on-error: true
 
   analyze:
     needs: integration-tests
