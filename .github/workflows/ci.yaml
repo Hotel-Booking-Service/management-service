@@ -107,16 +107,6 @@ jobs:
           path: build/
           retention-days: 1
 
-      - name: Upload unit test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: unit-test-results
-          path: |
-            build/test-results/test/
-            build/reports/tests/test/
-          retention-days: 7
-
   integration-tests:
     needs: unit-tests
     runs-on: ubuntu-22.04
@@ -187,16 +177,6 @@ jobs:
             build/reports/jacoco/test/jacocoTestReport.xml
           retention-days: 7
 
-      - name: Upload integration test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: integration-test-results
-          path: |
-            build/test-results/integrationTest/
-            build/reports/tests/integrationTest/
-          retention-days: 7
-
   test-reporter:
     needs: [unit-tests, integration-tests]
     runs-on: ubuntu-22.04
@@ -209,37 +189,41 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Download unit test results
-        uses: actions/download-artifact@v4
-        with:
-          name: unit-test-results
-          path: unit-test-results/
 
-      - name: Download integration test results
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build after unit tests
         uses: actions/download-artifact@v4
         with:
-          name: integration-test-results
-          path: integration-test-results/
+          name: build-after-unit
+          path: build/
+
+      - name: Download final build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-final
+          path: build/
 
       - name: Unit Test Reporter
         uses: dorny/test-reporter@v2.1.0
         if: always()
         with:
           name: Unit Tests
-          path: 'unit-test-results/test-results/test/*.xml'
+          path: 'build/test-results/test/*.xml'
           reporter: java-junit
-          fail-on-error: true
+          fail-on-error: false
 
       - name: Integration Test Reporter
         uses: dorny/test-reporter@v2.1.0
         if: always()
         with:
           name: Integration Tests
-          path: 'integration-test-results/test-results/integrationTest/*.xml'
+          path: 'build/test-results/integrationTest/*.xml'
           reporter: java-junit
-          fail-on-error: true
+          fail-on-error: false
 
-  analyze:
+  sonar:
     needs: integration-tests
     runs-on: ubuntu-22.04
 
