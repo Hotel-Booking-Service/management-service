@@ -17,6 +17,11 @@ jobs:
   build:
     runs-on: ubuntu-22.04
 
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,11 +42,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Assemble project
         run: ./gradlew assemble --no-daemon --info --build-cache
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
       - name: Upload initial build
         uses: actions/upload-artifact@v4
@@ -163,18 +176,64 @@ jobs:
             build/reports/jacoco/test/jacocoTestReport.xml
           retention-days: 7
 
-  sonar:
-    needs: integration-tests
+  test-reporter:
+    needs: [unit-tests, integration-tests]
     runs-on: ubuntu-22.04
+    if: always()
+
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      pull-requests: write
 
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download build after unit tests
+        uses: actions/download-artifact@v4
+        with:
+          name: build-after-unit
+          path: build/
 
       - name: Download final build
         uses: actions/download-artifact@v4
         with:
           name: build-final
+          path: build/
+
+      - name: Unit Test Reporter
+        uses: dorny/test-reporter@v2.1.0
+        if: always()
+        with:
+          name: Unit Tests
+          path: 'build/test-results/test/*.xml'
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Integration Test Reporter
+        uses: dorny/test-reporter@v2.1.0
+        if: always()
+        with:
+          name: Integration Tests
+          path: 'build/test-results/integrationTest/*.xml'
+          reporter: java-junit
+          fail-on-error: false
+
+  sonar:
+    needs: integration-tests
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-initial
           path: build/
 
       - name: Download JaCoCo Report
