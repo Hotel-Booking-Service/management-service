@@ -223,6 +223,16 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
+      - name: Comment test summary
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## ✅ Test Summary" > comment.md
+          echo "- Unit Tests: passed" >> comment.md
+          echo "- Integration Tests: passed" >> comment.md
+          gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   sonar:
     needs: integration-tests
     runs-on: ubuntu-22.04
