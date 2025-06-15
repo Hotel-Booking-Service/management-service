@@ -143,7 +143,7 @@ jobs:
         run: |
           RESPONSE=$(curl -sSL \
             --header "X-Vault-Token: $VAULT_TOKEN" \
-            "$VAULT_ADDR/v1/kv/data/secret/data/ci/management-service")
+            "$VAULT_ADDR/v1/kv/data/secret/data/ci/${{ github.event.repository.name }}")
           
           echo "$RESPONSE" | jq -r '.data.data | to_entries[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
