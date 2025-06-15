@@ -42,29 +42,6 @@ public class StorageTransactionAspect {
         return result;
     }
 
-    @Around("execution(* com.hbs.managamentservice.service.storage.StorageService.delete(..))")
-    public Object deferDeleteUntilTransactionCommit(ProceedingJoinPoint pjp) throws Throwable {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            Object[] args = pjp.getArgs();
-            if (args.length == 1 && args[0] instanceof String key) {
-                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                    @Override
-                    public void afterCommit() {
-                        try {
-                            log.debug("Deferred delete after commit: {}", key);
-                            s3StorageService.delete(key);
-                        } catch (Exception e) {
-                            log.error("Failed to delete file from storage after commit", e);
-                        }
-                    }
-                });
-                return null;
-            }
-        }
-
-        return pjp.proceed();
-    }
-
     private Object proceedWithExceptionHandling(ProceedingJoinPoint pjp) {
         try {
             return pjp.proceed();

@@ -111,8 +111,6 @@ public interface HotelController {
     @ResponseStatus(HttpStatus.OK)
     HotelResponse updateHotel(@PathVariable Long hotelId, @Valid @RequestBody UpdateHotelRequest request);
 
-
-
     @Operation(
             summary = "Удалить отель",
             description = "Удаляет отель по переданному идентификатору."
