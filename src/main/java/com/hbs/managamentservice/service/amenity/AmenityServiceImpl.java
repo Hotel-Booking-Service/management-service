@@ -23,9 +23,9 @@ public class AmenityServiceImpl implements AmenityService {
     private final AmenityRepository amenityRepository;
     private final AmenityMapper amenityMapper;
     private final S3StorageService s3StorageService;
+    private final AmenityValidator amenityValidator;
 
     private static final String AMENITY_ICON_FOLDER = "icons/amenities";
-    private final AmenityValidator amenityValidator;
 
     @Override
     @Transactional(readOnly = true)

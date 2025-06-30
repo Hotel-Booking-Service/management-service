@@ -8,9 +8,12 @@ spring:
     import: optional:file:.env[.properties]
   docker:
     compose:
-      file: docker-compose-dev.yaml
+      enabled: false
 
   datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -21,13 +24,30 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
+debezium:
+  enabled: true
+  connector-name: postgres-connector
+  connect-url: http://localhost:8083
+  config:
+    topic:
+      prefix: "management-service"
+    database:
+      hostname: postgres
+      port: ${DB_PORT}
+      user: debezium
+      password: DEBEZIUM_PASSWORD
+      dbname: ${DB_NAME}
+    slot: debezium_slot
+    publication: hotel_pub
+    table-include-list: "public.hotel,public.location,public.amenity,public.room_type,public.hotel_room,public.hotel_amenities,public.hotel_photo"
+
 storage:
   s3:
-    endpoint: https://storage.yandexcloud.net/
-    region: ru-central1
+    endpoint: https://s3.cloud.ru
+    region: ru-central-1
     access-key: ${S3_ACCESS_KEY}
     secret-key: ${S3_SECRET_KEY}
-    bucket: hbs-bucket
+    bucket: dev-bucket-hbs
     path:
       delim: /
     url-expiration-seconds: 900

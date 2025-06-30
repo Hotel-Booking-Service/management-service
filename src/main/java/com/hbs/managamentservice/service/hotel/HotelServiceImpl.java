@@ -53,9 +53,7 @@ public class HotelServiceImpl implements HotelService {
     @Transactional
     public HotelResponse updateHotel(Long id, UpdateHotelRequest request) {
         Hotel hotel = hotelResolver.resolveById(id);
-
         hotelRelationResolver.resolveRelations(request, hotel);
-
         hotelMapper.updateHotelFromPatchRequest(request, hotel);
 
         return hotelMapper.toHotelResponse(hotel);
