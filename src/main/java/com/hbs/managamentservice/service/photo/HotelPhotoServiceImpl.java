@@ -60,7 +60,7 @@ public class HotelPhotoServiceImpl implements HotelPhotoService {
     public List<PhotoUploadResponse> createHotelPhotos(Long hotelId, List<MultipartFile> photos) {
         Hotel hotel = hotelResolver.resolveById(hotelId);
 
-        List<PhotoUploadResponse> uris = photos.stream()
+        return photos.stream()
                 .map(photo -> {
                     String s3Key = s3Service.upload(photo, PATH_HOTEL_PHOTOS);
 
@@ -72,8 +72,6 @@ public class HotelPhotoServiceImpl implements HotelPhotoService {
                     return photoMapper.toURI(hotelPhoto.getId());
                 })
                 .toList();
-
-        return uris;
     }
 
     @Override

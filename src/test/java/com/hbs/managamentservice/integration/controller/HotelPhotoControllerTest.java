@@ -99,4 +99,59 @@ class HotelPhotoControllerTest {
         );
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
+
+    @Test
+    @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml", "dataset/photo/photos.yaml"}, cleanBefore = true, cleanAfter = true)
+    void testGetHotelPhotos() {
+        ResponseEntity<List<PhotoUploadResponse>> response = testRestTemplate.exchange(
+                "/api/v1/hotels/1/photos",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {
+                }
+        );
+
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml"}, cleanBefore = true, cleanAfter = true)
+    void testCreateHotelPhotos() {
+        Resource resource = new ClassPathResource("dataset/photo/icon.png");
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("photos", resource);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = testRestTemplate.exchange(
+                "/api/v1/hotels/1/photos",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<>() {
+                }
+        );
+
+        System.out.println(response.getBody());
+
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    }
+
+    @Test
+    @DataSet(value = {"dataset/location/locations.yaml", "dataset/hotel/hotels.yaml", "dataset/photo/photos.yaml"}, cleanBefore = true, cleanAfter = true)
+    void testDeleteHotelPhoto() {
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                "/api/v1/hotels/photos/1",
+                HttpMethod.DELETE,
+                null,
+                Void.class
+        );
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
 }
